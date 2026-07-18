@@ -3,13 +3,6 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
-    <Authors>apptade</Authors>
-    <Company>CR</Company>
-
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/apptade/CR.Exceptions</RepositoryUrl>
-
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 </Project>
