@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+	<Description>ASP.NET Core integration for CR.Exceptions.</Description>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\CR.Exceptions\CR.Exceptions.csproj" />
   </ItemGroup>

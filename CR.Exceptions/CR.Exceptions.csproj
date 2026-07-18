@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+	<Description>Common exception abstractions.</Description>
+  </PropertyGroup>
+
 </Project>
