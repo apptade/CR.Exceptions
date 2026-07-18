@@ -1,1 +1,3 @@
-<Solution />
+<Solution>
+  <Project Path="CR.Exceptions/CR.Exceptions.csproj" />
+</Solution>
