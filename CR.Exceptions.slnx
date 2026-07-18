@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="CR.Exceptions.AspNet/CR.Exceptions.AspNet.csproj" Id="2749300d-4ad8-4e25-b49f-75847b8c0cbd" />
   <Project Path="CR.Exceptions/CR.Exceptions.csproj" />
 </Solution>
