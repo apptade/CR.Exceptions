@@ -4,7 +4,11 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version
+        required: true
 
 jobs:
   publish:
@@ -31,9 +35,13 @@ jobs:
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           
-          dotnet pack \
-            CR.Exceptions/CR.Exceptions.csproj \
-            CR.Exceptions.AspNet/CR.Exceptions.AspNet.csproj \
+          dotnet pack CR.Exceptions/CR.Exceptions.csproj \
+            -c Release \
+            -o ./packages \
+            -p:PackageVersion=$VERSION \
+            --no-build
+
+          dotnet pack CR.Exceptions.AspNet/CR.Exceptions.AspNet.csproj \
             -c Release \
             -o ./packages \
             -p:PackageVersion=$VERSION \
