@@ -29,14 +29,8 @@ jobs:
       - name: Pack
         run: |
           VERSION=${GITHUB_REF_NAME#v}
-
-          dotnet pack CR.Exceptions/CR.Exceptions.csproj \
-            -c Release \
-            -o ./packages \
-            -p:PackageVersion=$VERSION \
-            --no-build
-
-          dotnet pack CR.Exceptions/CR.Exceptions.AspNet.csproj \
+          
+          dotnet pack CR.Exceptions.sln \
             -c Release \
             -o ./packages \
             -p:PackageVersion=$VERSION \
