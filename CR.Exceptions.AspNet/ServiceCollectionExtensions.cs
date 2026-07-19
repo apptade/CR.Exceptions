@@ -11,6 +11,8 @@ public static class ServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(setupAction);
 
             services.Configure(setupAction);
+
+            services.AddProblemDetails();
             services.AddExceptionHandler<CrExceptionHandler>();
 
             return services;
