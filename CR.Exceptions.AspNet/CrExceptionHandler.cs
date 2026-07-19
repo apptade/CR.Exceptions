@@ -1,46 +1,84 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net;
+using System.Diagnostics;
 
 namespace CR.Exceptions.AspNet;
 
 public sealed class CrExceptionHandler : IExceptionHandler
 {
-    private readonly CrExceptionOptions _options;
+    private readonly IProblemDetailsService _problemDetailsService;
+    private readonly ExceptionMappingOptions _options;
     private readonly ILogger<CrExceptionHandler> _logger;
 
-    public CrExceptionHandler(IOptions<CrExceptionOptions> options, ILogger<CrExceptionHandler> logger)
+    public CrExceptionHandler(
+        IProblemDetailsService problemDetailsService,
+        IOptions<ExceptionMappingOptions> options,
+        ILogger<CrExceptionHandler> logger)
     {
+        _problemDetailsService = problemDetailsService;
         _options = options.Value;
         _logger = logger;
     }
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        var crException = exception as CrException;
-        var isCrException = crException != null;
-
-        if (!_options.TryGetStatusCode(exception, out var statusCode))
+        if (httpContext.Response.HasStarted)
         {
-            statusCode = HttpStatusCode.InternalServerError;
+            _logger.LogError(exception, "The response has already started. Cannot write exception response.");
+            return false;
         }
 
-        if (!isCrException)
+        var httpStatusCode = StatusCodes.Status500InternalServerError;
+        string errorCode;
+        string errorMessage;
+
+        if (exception is CrException crException)
         {
-            _logger.LogError(exception, "An unhandled exception occurred during the request.");
+            errorCode = crException.Code;
+            errorMessage = crException.Message;
+
+            var statusCode = _options.FindHttpStatusCode(crException);
+
+            if (statusCode is null)
+                _logger.LogWarning(crException, "No HTTP status mapping found for exception type '{ExceptionType}'.", crException.GetType().FullName);
+            else
+                httpStatusCode = statusCode.Value;
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug(crException, "Domain error occurred. Code: '{Code}'", errorCode);
+        }
+        else
+        {
+            errorCode = ExceptionCodes.InternalError;
+            errorMessage = "An unexpected error occurred.";
+
+            _logger.LogError(exception, "An unexpected error occurred. Code: '{Code}'", errorCode);
         }
 
-        httpContext.Response.StatusCode = (int)statusCode;
-        var response = new
+        httpContext.Response.StatusCode = httpStatusCode;
+
+        var traceId = Activity.Current?.TraceId.ToString();
+        var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
+        var problemDetailsContext = new ProblemDetailsContext
         {
-            code = crException?.Code ?? "INTERNAL_ERROR",
-            message = exception.Message
+            HttpContext = httpContext,
+            Exception = exception,
+            ProblemDetails =
+            {
+                Type = "about:blank",
+                Status = httpStatusCode,
+                Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
+                Detail = errorMessage,
+                Instance = httpContext.Request.Path,
+            }
         };
 
-        await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+        problemDetailsContext.ProblemDetails.Extensions.Add("code", errorCode);
+        problemDetailsContext.ProblemDetails.Extensions.Add("traceId", string.IsNullOrWhiteSpace(traceId) ? httpContext.TraceIdentifier : traceId);
 
-        return true;
+        return await _problemDetailsService.TryWriteAsync(problemDetailsContext);
     }
 }
