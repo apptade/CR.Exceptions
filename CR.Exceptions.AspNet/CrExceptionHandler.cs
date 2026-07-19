@@ -43,7 +43,10 @@ public sealed class CrExceptionHandler : IExceptionHandler
             var statusCode = _options.FindHttpStatusCode(crException);
 
             if (statusCode is null)
-                _logger.LogWarning(crException, "No HTTP status mapping found for exception type '{ExceptionType}'.", crException.GetType().FullName);
+                _logger.LogWarning(
+                    crException,
+                    "No HTTP status mapping found for exception type '{ExceptionType}'. Using 500 Internal Server Error.",
+                    crException.GetType().FullName);
             else
                 httpStatusCode = statusCode.Value;
 
@@ -58,9 +61,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
             _logger.LogError(exception, "An unexpected error occurred. Code: '{Code}'", errorCode);
         }
 
-        httpContext.Response.StatusCode = httpStatusCode;
-
-        var traceId = Activity.Current?.TraceId.ToString();
+        var traceId = Activity.Current?.TraceId.ToString() ?? httpContext.TraceIdentifier;
         var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
         var problemDetailsContext = new ProblemDetailsContext
         {
@@ -77,7 +78,9 @@ public sealed class CrExceptionHandler : IExceptionHandler
         };
 
         problemDetailsContext.ProblemDetails.Extensions.Add("code", errorCode);
-        problemDetailsContext.ProblemDetails.Extensions.Add("traceId", string.IsNullOrWhiteSpace(traceId) ? httpContext.TraceIdentifier : traceId);
+        problemDetailsContext.ProblemDetails.Extensions.Add("traceId", traceId);
+
+        httpContext.Response.StatusCode = httpStatusCode;
 
         return await _problemDetailsService.TryWriteAsync(problemDetailsContext);
     }
