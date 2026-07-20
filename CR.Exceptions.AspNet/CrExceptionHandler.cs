@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -76,11 +77,21 @@ public sealed class CrExceptionHandler : IExceptionHandler
             }
         };
 
-        problemDetailsContext.ProblemDetails.Extensions.Add("code", errorCode);
-        problemDetailsContext.ProblemDetails.Extensions.Add("traceId", traceId);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "code", errorCode);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "traceId", traceId);
 
         httpContext.Response.StatusCode = httpStatusCode;
 
         return await _problemDetailsService.TryWriteAsync(problemDetailsContext);
+    }
+
+    private void AddProblemDetailsExtension(ProblemDetails problemDetails, string key, object? value)
+    {
+        if (problemDetails.Extensions.ContainsKey(key))
+        {
+            _logger.LogWarning(
+                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.", key);
+        }
+        problemDetails.Extensions[key] = value;
     }
 }
