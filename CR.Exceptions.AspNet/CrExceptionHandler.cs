@@ -32,8 +32,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
         }
 
         var httpStatusCode = StatusCodes.Status500InternalServerError;
-        string errorCode;
-        string errorMessage;
+        string errorCode, errorMessage;
 
         if (exception is CrException crException)
         {
@@ -61,7 +60,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
             _logger.LogError(exception, "An unexpected error occurred. Code: '{Code}'", errorCode);
         }
 
-        var traceId = Activity.Current?.TraceId.ToString() ?? httpContext.TraceIdentifier;
+        var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
         var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
         var problemDetailsContext = new ProblemDetailsContext
         {
