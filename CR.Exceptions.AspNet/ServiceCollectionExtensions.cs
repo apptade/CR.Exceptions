@@ -6,6 +6,14 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
+        public IServiceCollection AddCrExceptionHandler()
+        {
+            return services.AddCrExceptionHandler(options =>
+            {
+                options.AddDefaultMappings();
+            });
+        }
+
         public IServiceCollection AddCrExceptionHandler(Action<ExceptionMappingOptions> setupAction)
         {
             ArgumentNullException.ThrowIfNull(setupAction);
