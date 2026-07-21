@@ -2,13 +2,8 @@ name: .NET Core CI
 
 on:
   pull_request:
-    branches: [ "main"]
+    branches: [ "main" ]
   workflow_dispatch:
-
-permissions:
-  checks: write
-  pull-requests: write
-  contents: read
 
 jobs:
   test:
@@ -34,12 +29,3 @@ jobs:
 
     - name: Run tests
       run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
-      continue-on-error: true
-
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      with:
-        name: .NET XUnit Tests Report
-        path: "**/TestResults/test-results.trx"
-        reporter: dotnet-trx
-        fail-on-error: true
