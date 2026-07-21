@@ -87,8 +87,8 @@ public sealed class CrExceptionHandler : IExceptionHandler
             },
         };
 
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.TraceId, traceId);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         httpContext.Response.StatusCode = httpStatusCode;
 
