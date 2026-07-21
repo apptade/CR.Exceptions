@@ -1,0 +1,49 @@
+name: .NET Core CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Test only for repository default branch or manual trigger
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      github.event.pull_request.base.ref == github.event.repository.default_branch
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Check code format
+      run: dotnet format --verify-no-changes --verbosity normal
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run tests
+      run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+      continue-on-error: true
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      with:
+        name: .NET XUnit Tests Report
+        path: "**/TestResults/test-results.trx"
+        reporter: dotnet-trx
+        fail-on-error: true
