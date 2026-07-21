@@ -33,32 +33,42 @@ public sealed class CrExceptionHandler : IExceptionHandler
         }
 
         var httpStatusCode = StatusCodes.Status500InternalServerError;
-        string errorCode, errorMessage;
+        IReadOnlyCollection<CrException.Error> errors;
+        string detail;
 
         if (exception is CrException crException)
         {
-            errorCode = crException.Code;
-            errorMessage = crException.Message;
+            detail = crException.Message;
+            errors = crException.Errors;
 
             var statusCode = _options.FindHttpStatusCode(crException);
 
             if (statusCode is null)
                 _logger.LogWarning(
                     crException,
-                    "No HTTP status mapping found for exception type '{ExceptionType}'. Using 500 Internal Server Error.",
-                    crException.GetType().FullName);
+                    "No HTTP status mapping found for exception type '{ExceptionType}' with {ErrorCount} error(s). Using 500 Internal Server Error.",
+                    crException.GetType().FullName, crException.Errors.Count);
             else
                 httpStatusCode = statusCode.Value;
 
             if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug(crException, "Domain error occurred. Code: '{Code}'", errorCode);
+                _logger.LogDebug(
+                    crException,
+                    "Domain exception of type '{ExceptionType}' occurred with {ErrorCount} error(s).",
+                    crException.GetType().FullName, crException.Errors.Count);
         }
         else
         {
-            errorCode = ExceptionCodes.InternalError;
-            errorMessage = "An unexpected error occurred.";
+            detail = "An unexpected error occurred.";
+            errors =
+            [
+                new CrException.Error(ErrorCodes.InternalError, "Internal Error")
+            ];
 
-            _logger.LogError(exception, "An unexpected error occurred. Code: '{Code}'", errorCode);
+            _logger.LogError(
+                exception,
+                "An unexpected exception of type '{ExceptionType}' occurred.",
+                exception.GetType().FullName);
         }
 
         var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
@@ -72,13 +82,13 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 Type = "about:blank",
                 Status = httpStatusCode,
                 Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
-                Detail = errorMessage,
-                Instance = httpContext.Request.Path,
-            }
+                Detail = detail,
+                Instance = httpContext.Request.Path
+            },
         };
 
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "code", errorCode);
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "traceId", traceId);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.TraceId, traceId);
 
         httpContext.Response.StatusCode = httpStatusCode;
 
@@ -90,7 +100,8 @@ public sealed class CrExceptionHandler : IExceptionHandler
         if (problemDetails.Extensions.ContainsKey(key))
         {
             _logger.LogWarning(
-                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.", key);
+                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.",
+                key);
         }
         problemDetails.Extensions[key] = value;
     }
