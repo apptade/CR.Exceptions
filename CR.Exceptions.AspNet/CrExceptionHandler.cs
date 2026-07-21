@@ -33,32 +33,33 @@ public sealed class CrExceptionHandler : IExceptionHandler
         }
 
         var httpStatusCode = StatusCodes.Status500InternalServerError;
-        string errorCode, errorMessage;
+        IReadOnlyCollection<CrException.Error> errors;
+        string detail;
 
         if (exception is CrException crException)
         {
-            errorCode = crException.Code;
-            errorMessage = crException.Message;
+            detail = crException.Message;
+            errors = crException.Errors;
 
             var statusCode = _options.FindHttpStatusCode(crException);
 
             if (statusCode is null)
-                _logger.LogWarning(
-                    crException,
-                    "No HTTP status mapping found for exception type '{ExceptionType}'. Using 500 Internal Server Error.",
-                    crException.GetType().FullName);
+            {
+                RecordMissingHttpStatusMapping(crException);
+            }
             else
+            {
                 httpStatusCode = statusCode.Value;
+            }
 
-            if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug(crException, "Domain error occurred. Code: '{Code}'", errorCode);
+            RecordDomainException(crException);
         }
         else
         {
-            errorCode = ExceptionCodes.InternalError;
-            errorMessage = "An unexpected error occurred.";
+            detail = "An unexpected error occurred.";
+            errors = [new(ErrorCodes.InternalError, "An unexpected internal error occurred.")];
 
-            _logger.LogError(exception, "An unexpected error occurred. Code: '{Code}'", errorCode);
+            RecordUnhandledException(exception);
         }
 
         var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
@@ -72,17 +73,51 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 Type = "about:blank",
                 Status = httpStatusCode,
                 Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
-                Detail = errorMessage,
-                Instance = httpContext.Request.Path,
-            }
+                Detail = detail,
+                Instance = httpContext.Request.Path
+            },
         };
 
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "code", errorCode);
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, "traceId", traceId);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.TraceId, traceId);
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         httpContext.Response.StatusCode = httpStatusCode;
 
-        return await _problemDetailsService.TryWriteAsync(problemDetailsContext);
+        var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
+
+        if (!isWritten)
+            _logger.LogError(exception, "Failed to write ProblemDetails response.");
+
+        return isWritten;
+    }
+
+    private void RecordMissingHttpStatusMapping(CrException exception)
+    {
+        _logger.LogWarning(
+            exception,
+            "No HTTP status mapping found for exception type '{ExceptionType}' with {ErrorCount} error(s). Using 500 Internal Server Error.",
+            exception.GetType().FullName,
+            exception.Errors.Count);
+    }
+
+    private void RecordDomainException(CrException exception)
+    {
+        if (!_logger.IsEnabled(LogLevel.Debug))
+            return;
+
+        _logger.LogDebug(
+            exception,
+            "Domain exception of type '{ExceptionType}' occurred with {ErrorCount} error(s).",
+            exception.GetType().FullName,
+            exception.Errors.Count);
+    }
+
+    private void RecordUnhandledException(Exception exception)
+    {
+        _logger.LogError(
+            exception,
+            "An unexpected exception of type '{ExceptionType}' occurred.",
+            exception.GetType().FullName);
     }
 
     private void AddProblemDetailsExtension(ProblemDetails problemDetails, string key, object? value)
@@ -90,7 +125,8 @@ public sealed class CrExceptionHandler : IExceptionHandler
         if (problemDetails.Extensions.ContainsKey(key))
         {
             _logger.LogWarning(
-                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.", key);
+                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.",
+                key);
         }
         problemDetails.Extensions[key] = value;
     }

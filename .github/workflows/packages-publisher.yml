@@ -1,4 +1,4 @@
-name: Publish NuGet Packages
+name: NuGet Packages Publisher
 
 on:
   push:
@@ -29,18 +29,7 @@ jobs:
       - name: Pack
         run: |
           VERSION=${GITHUB_REF_NAME#v}
-          
-          dotnet pack CR.Exceptions/CR.Exceptions.csproj \
-            -c Release \
-            -o ./packages \
-            -p:PackageVersion=$VERSION \
-            --no-build
-
-          dotnet pack CR.Exceptions.AspNet/CR.Exceptions.AspNet.csproj \
-            -c Release \
-            -o ./packages \
-            -p:PackageVersion=$VERSION \
-            --no-build
+          dotnet pack -c Release -o ./packages -p:PackageVersion=$VERSION --no-build
 
       - name: Publish
         run: |

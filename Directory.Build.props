@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <Company>AptdCR</Company>
+    <Authors>apptade</Authors>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

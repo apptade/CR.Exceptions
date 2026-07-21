@@ -2,7 +2,7 @@
 
 public abstract class UnauthorizedException : CrException
 {
-    protected UnauthorizedException(string code, string message, Exception? innerException = null) : base(code, message, innerException)
+    protected UnauthorizedException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
     {
     }
 }
