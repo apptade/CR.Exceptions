@@ -3,9 +3,7 @@
 public sealed class TestConflictException : ConflictException
 {
     public TestConflictException() : base(
-        [
-            new Error("TestConflict", "Test Conflict")
-        ],
+        [new Error("TestConflict", "Test Conflict")],
         "Test Message Conflict")
     { }
 }
