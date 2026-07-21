@@ -4,8 +4,8 @@ public sealed class TestNotFoundException : NotFoundException
 {
     public TestNotFoundException() : base(
         [
-            new Error("TestNotFound", "Entity not found")
+            new Error("TestNotFound", "Test Entity not found")
         ],
-        "Entity not found")
+        "Test Message Entity not found")
     { }
 }

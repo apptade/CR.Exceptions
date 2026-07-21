@@ -4,8 +4,8 @@ public sealed class TestConflictException : ConflictException
 {
     public TestConflictException() : base(
         [
-            new Error("TestConflict", "Conflict")
+            new Error("TestConflict", "Test Conflict")
         ],
-        "Conflict")
+        "Test Message Conflict")
     { }
 }
