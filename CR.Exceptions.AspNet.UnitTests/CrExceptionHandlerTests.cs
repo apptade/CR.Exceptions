@@ -20,23 +20,62 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public async Task Should_Return_404_For_NotFoundException()
+    public Task Should_Return_404_For_NotFoundException()
     {
-        var services = new ServiceCollection()
-            .AddLogging()
-            .AddCrExceptionHandler();
+        return ShouldReturnStatusCode(
+            new TestNotFoundException(),
+            StatusCodes.Status404NotFound);
+    }
 
-        var provider = services.BuildServiceProvider();
+    [Fact]
+    public Task Should_Return_500_For_UnhandledException()
+    {
+        return ShouldReturnStatusCode(
+            new Exception("Something went wrong"),
+            StatusCodes.Status500InternalServerError);
+    }
+
+    private async Task ShouldReturnStatusCode(Exception exception, int expectedStatusCode)
+    {
+        using var provider = CreateServiceProvider();
+
         var handler = provider.GetRequiredService<IExceptionHandler>();
+        var context = CreateContext();
 
-        var context = new DefaultHttpContext { Response = { Body = new MemoryStream() } };
-        var result = await handler.TryHandleAsync(context, new TestNotFoundException(), CancellationToken.None);
+        var result = await handler.TryHandleAsync(
+            context,
+            exception,
+            CancellationToken.None);
 
+        await LogResponseBody(context);
+
+        result.Should().BeTrue();
+        context.Response.StatusCode.Should().Be(expectedStatusCode);
+    }
+
+    private static ServiceProvider CreateServiceProvider()
+    {
+        return new ServiceCollection()
+            .AddLogging()
+            .AddCrExceptionHandler()
+            .BuildServiceProvider();
+    }
+
+    private static DefaultHttpContext CreateContext()
+    {
+        return new DefaultHttpContext
+        {
+            Response =
+            {
+                Body = new MemoryStream()
+            }
+        };
+    }
+
+    private async Task LogResponseBody(DefaultHttpContext context)
+    {
         context.Response.Body.Position = 0;
         var jsonNode = await JsonNode.ParseAsync(context.Response.Body);
         _output.WriteLine(jsonNode?.ToJsonString(_jsonSerializerOptions));
-
-        result.Should().BeTrue();
-        context.Response.StatusCode.Should().Be(StatusCodes.Status404NotFound);
     }
 }
