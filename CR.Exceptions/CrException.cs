@@ -2,9 +2,9 @@
 
 public abstract class CrException : Exception
 {
-    public IReadOnlyCollection<Error> Errors { get; }
+    public IReadOnlyCollection<CrError> Errors { get; }
 
-    protected CrException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(message, innerException)
+    protected CrException(IReadOnlyCollection<CrError> errors, string message, Exception? innerException = null) : base(message, innerException)
     {
         ArgumentNullException.ThrowIfNull(errors);
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
@@ -23,6 +23,4 @@ public abstract class CrException : Exception
 
         Errors = errors;
     }
-
-    public sealed record class Error(string Code, string Message);
 }

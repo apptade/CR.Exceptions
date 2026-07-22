@@ -2,7 +2,7 @@
 
 public abstract class ConflictException : CrException
 {
-    protected ConflictException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
+    protected ConflictException(IReadOnlyCollection<CrError> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
     {
     }
 }

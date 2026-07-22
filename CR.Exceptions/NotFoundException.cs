@@ -2,7 +2,7 @@
 
 public abstract class NotFoundException : CrException
 {
-    protected NotFoundException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
+    protected NotFoundException(IReadOnlyCollection<CrError> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
     {
     }
 }
