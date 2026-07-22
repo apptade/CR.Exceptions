@@ -8,8 +8,13 @@ using System.Diagnostics;
 
 namespace CR.Exceptions.AspNet;
 
-public sealed class CrExceptionHandler : IExceptionHandler
+public sealed partial class CrExceptionHandler : IExceptionHandler
 {
+    private static readonly CrError[] FallbackInternalErrors =
+    [
+        new(ErrorCodes.InternalError, "An unexpected internal error occurred.")
+    ];
+
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly ExceptionMappingOptions _options;
     private readonly ILogger<CrExceptionHandler> _logger;
@@ -28,12 +33,14 @@ public sealed class CrExceptionHandler : IExceptionHandler
     {
         if (httpContext.Response.HasStarted)
         {
-            _logger.LogError(exception, "The response has already started. Cannot write exception response.");
+            LogResponseAlreadyStarted(_logger, exception);
             return false;
         }
 
         var httpStatusCode = StatusCodes.Status500InternalServerError;
-        IReadOnlyCollection<CrException.Error> errors;
+        var exceptionTypeFullName = exception.GetType().FullName;
+
+        CrError[] errors;
         string detail;
 
         if (exception is CrException crException)
@@ -45,21 +52,21 @@ public sealed class CrExceptionHandler : IExceptionHandler
 
             if (statusCode is null)
             {
-                RecordMissingHttpStatusMapping(crException);
+                LogMissingHttpStatusMapping(_logger, exception, exceptionTypeFullName);
             }
             else
             {
                 httpStatusCode = statusCode.Value;
             }
 
-            RecordDomainException(crException);
+            LogDomainException(_logger, exception, exceptionTypeFullName);
         }
         else
         {
             detail = "An unexpected error occurred.";
-            errors = [new(ErrorCodes.InternalError, "An unexpected internal error occurred.")];
+            errors = FallbackInternalErrors;
 
-            RecordUnhandledException(exception);
+            LogUnhandledException(_logger, exception, exceptionTypeFullName);
         }
 
         var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
@@ -86,48 +93,17 @@ public sealed class CrExceptionHandler : IExceptionHandler
         var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
 
         if (!isWritten)
-            _logger.LogError(exception, "Failed to write ProblemDetails response.");
+            LogFailedToWriteProblemDetails(_logger, exception);
 
         return isWritten;
     }
 
-    private void RecordMissingHttpStatusMapping(CrException exception)
-    {
-        _logger.LogWarning(
-            exception,
-            "No HTTP status mapping found for exception type '{ExceptionType}' with {ErrorCount} error(s). Using 500 Internal Server Error.",
-            exception.GetType().FullName,
-            exception.Errors.Count);
-    }
-
-    private void RecordDomainException(CrException exception)
-    {
-        if (!_logger.IsEnabled(LogLevel.Debug))
-            return;
-
-        _logger.LogDebug(
-            exception,
-            "Domain exception of type '{ExceptionType}' occurred with {ErrorCount} error(s).",
-            exception.GetType().FullName,
-            exception.Errors.Count);
-    }
-
-    private void RecordUnhandledException(Exception exception)
-    {
-        _logger.LogError(
-            exception,
-            "An unexpected exception of type '{ExceptionType}' occurred.",
-            exception.GetType().FullName);
-    }
-
     private void AddProblemDetailsExtension(ProblemDetails problemDetails, string key, object? value)
     {
-        if (problemDetails.Extensions.ContainsKey(key))
+        if (!problemDetails.Extensions.TryAdd(key, value))
         {
-            _logger.LogWarning(
-                "The ProblemDetails extension key '{Key}' already exists. The existing value was overwritten while building the error response.",
-                key);
+            problemDetails.Extensions[key] = value;
+            LogProblemDetailsExtensionOverwritten(_logger, key);
         }
-        problemDetails.Extensions[key] = value;
     }
 }

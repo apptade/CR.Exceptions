@@ -2,14 +2,18 @@
 
 public abstract class CrException : Exception
 {
-    public IReadOnlyCollection<Error> Errors { get; }
+    /// <summary>
+    /// Gets the errors associated with this exception.
+    /// The array is not copied.
+    /// </summary>
+    public CrError[] Errors { get; }
 
-    protected CrException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(message, innerException)
+    protected CrException(CrError[] errors, string message, Exception? innerException = null) : base(message, innerException)
     {
         ArgumentNullException.ThrowIfNull(errors);
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
-        if (errors.Count == 0)
+        if (errors.Length == 0)
         {
             throw new ArgumentException("At least one error must be provided.", nameof(errors));
         }
@@ -23,6 +27,4 @@ public abstract class CrException : Exception
 
         Errors = errors;
     }
-
-    public sealed record class Error(string Code, string Message);
 }

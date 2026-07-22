@@ -2,7 +2,7 @@
 
 public abstract class ValidationException : CrException
 {
-    protected ValidationException(IReadOnlyCollection<Error> errors, string message, Exception? innerException = null) : base(errors, message, innerException)
+    protected ValidationException(CrError[] errors, string message, Exception? innerException = null) : base(errors, message, innerException)
     {
     }
 }
