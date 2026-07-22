@@ -59,7 +59,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
                 httpStatusCode = statusCode.Value;
             }
 
-            LogDomainException(_logger, exception, exceptionTypeFullName);
+            LogApplicationException(_logger, exception, exceptionTypeFullName);
         }
         else
         {
@@ -93,7 +93,9 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
 
         if (!isWritten)
+        {
             LogFailedToWriteProblemDetails(_logger, exception);
+        }
 
         return isWritten;
     }
@@ -102,8 +104,8 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
     {
         if (!problemDetails.Extensions.TryAdd(key, value))
         {
-            problemDetails.Extensions[key] = value;
             LogProblemDetailsExtensionOverwritten(_logger, key);
+            problemDetails.Extensions[key] = value;
         }
     }
 }

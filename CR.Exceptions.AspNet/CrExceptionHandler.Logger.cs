@@ -17,7 +17,7 @@ public sealed partial class CrExceptionHandler
     [LoggerMessage(
         Level = LogLevel.Debug,
         Message = "Application exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogDomainException(ILogger logger, Exception exception, string? exceptionType);
+    private static partial void LogApplicationException(ILogger logger, Exception exception, string? exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Error,
