@@ -2,7 +2,7 @@
 
 public sealed class TestConflictException : ConflictException
 {
-    public TestConflictException() : base([new CrError("TestConflict", "Test Conflict")])
+    public TestConflictException() : base([new("TestConflict", "Test Conflict")])
     {
     }
 }
