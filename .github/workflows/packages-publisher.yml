@@ -3,7 +3,7 @@ name: NuGet Packages Publisher
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   publish:
@@ -11,31 +11,38 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: "10.0.x"
 
-      - name: Restore
-        run: dotnet restore
+      - run: dotnet restore
 
-      - name: Build
-        run: dotnet build -c Release --no-restore
+      - run: dotnet build -c Release --no-restore
 
       - name: Pack
+        env:
+          VERSION: ${{ github.ref_name }}
         run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          dotnet pack -c Release -o ./packages -p:PackageVersion=$VERSION --no-build
+          dotnet pack \
+            -c Release \
+            --no-build \
+            -o ./artifacts \
+            -p:PackageVersion=${VERSION#v}
+
+      - name: NuGet Login (Trusted Publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: YOUR_NUGET_USERNAME
 
       - name: Publish
         run: |
-          for file in ./packages/*.nupkg; do
-            dotnet nuget push "$file" \
-              --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
-              --api-key ${{ secrets.GITHUB_TOKEN }} \
-              --skip-duplicate
-          done
+          dotnet nuget push "./artifacts/*.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --skip-duplicate
