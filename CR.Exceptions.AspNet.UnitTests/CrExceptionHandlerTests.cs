@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Xunit.Abstractions;
 
 namespace CR.Exceptions.AspNet.UnitTests;
@@ -117,11 +116,7 @@ public sealed class CrExceptionHandlerTests
         public int? Status { get; set; }
         public string? Detail { get; set; }
         public string? Instance { get; set; }
-
-        [JsonPropertyName(ProblemDetailsExtensionNames.TraceId)]
         public string? TraceId { get; set; }
-
-        [JsonPropertyName(ProblemDetailsExtensionNames.Errors)]
         public CrError[]? Errors { get; set; }
     }
 }
