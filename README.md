@@ -2,11 +2,6 @@
 
 A lightweight library for defining application exceptions and automatically converting them into HTTP responses in ASP.NET Core.
 
-## Packages
-
-- **CR.Exceptions** — Base exception types and error models.
-- **CR.Exceptions.AspNet** — ASP.NET Core exception handler integration.
-
 ## Installation
 
 Register the exception handler during application startup.
