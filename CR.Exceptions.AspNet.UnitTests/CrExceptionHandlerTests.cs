@@ -26,17 +26,13 @@ public sealed class CrExceptionHandlerTests
     [Fact]
     public Task Should_Return_404_For_NotFoundException()
     {
-        return ShouldReturnStatusCode(
-            new TestNotFoundException(),
-            StatusCodes.Status404NotFound);
+        return ShouldReturnStatusCode(new TestNotFoundException(), StatusCodes.Status404NotFound);
     }
 
     [Fact]
     public Task Should_Return_500_For_UnhandledException()
     {
-        return ShouldReturnStatusCode(
-            new Exception("Something went wrong"),
-            StatusCodes.Status500InternalServerError);
+        return ShouldReturnStatusCode(new Exception("Something went wrong"), StatusCodes.Status500InternalServerError);
     }
 
     private async Task ShouldReturnStatusCode(Exception exception, int expectedStatusCode)
