@@ -34,11 +34,11 @@ jobs:
             -o ./artifacts \
             -p:PackageVersion=${VERSION#v}
 
-      - name: NuGet Login (Trusted Publishing)
+      - name: NuGet Login
         id: login
         uses: NuGet/login@v1
         with:
-          user: YOUR_NUGET_USERNAME
+          user: ${{ github.repository_owner }}
 
       - name: Publish
         run: |
