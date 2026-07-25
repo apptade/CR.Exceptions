@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using Xunit.Abstractions;
 
 namespace CR.Exceptions.AspNet.UnitTests;
@@ -27,17 +26,13 @@ public sealed class CrExceptionHandlerTests
     [Fact]
     public Task Should_Return_404_For_NotFoundException()
     {
-        return ShouldReturnStatusCode(
-            new TestNotFoundException(),
-            StatusCodes.Status404NotFound);
+        return ShouldReturnStatusCode(new TestNotFoundException(), StatusCodes.Status404NotFound);
     }
 
     [Fact]
     public Task Should_Return_500_For_UnhandledException()
     {
-        return ShouldReturnStatusCode(
-            new Exception("Something went wrong"),
-            StatusCodes.Status500InternalServerError);
+        return ShouldReturnStatusCode(new Exception("Something went wrong"), StatusCodes.Status500InternalServerError);
     }
 
     private async Task ShouldReturnStatusCode(Exception exception, int expectedStatusCode)
@@ -117,11 +112,7 @@ public sealed class CrExceptionHandlerTests
         public int? Status { get; set; }
         public string? Detail { get; set; }
         public string? Instance { get; set; }
-
-        [JsonPropertyName(ProblemDetailsExtensionNames.TraceId)]
         public string? TraceId { get; set; }
-
-        [JsonPropertyName(ProblemDetailsExtensionNames.Errors)]
         public CrError[]? Errors { get; set; }
     }
 }
