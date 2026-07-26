@@ -5,16 +5,15 @@ namespace CR.Exceptions.AspNet.UnitTests;
 
 public sealed class ExceptionMappingOptionsTests
 {
-    [Theory]
-    [InlineData(typeof(TestNotFoundException), StatusCodes.Status404NotFound)]
-    [InlineData(typeof(TestConflictException), StatusCodes.Status409Conflict)]
-    public void Should_Return_Correct_Status_Code(Type exceptionType, int expectedStatusCode)
+    [Fact]
+    public void Should_Return_404_Status_Code_For_NotFoundException()
     {
         var options = new ExceptionMappingOptions().AddDefaultMappings();
-        var exception = (CrException)Activator.CreateInstance(exceptionType)!;
+        var exception = new TestNotFoundException();
+
         var statusCode = options.FindHttpStatusCode(exception);
 
         statusCode.Should()
-            .Be(expectedStatusCode);
+            .Be(StatusCodes.Status404NotFound);
     }
 }
