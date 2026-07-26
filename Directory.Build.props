@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Company>AptdCR</Company>
+    <Company>apptade</Company>
     <Authors>apptade</Authors>
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -11,9 +11,10 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
 
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 </Project>
