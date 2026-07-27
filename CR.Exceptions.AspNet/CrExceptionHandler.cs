@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using CR.Exceptions.AspNet.Options;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -10,18 +11,18 @@ namespace CR.Exceptions.AspNet;
 
 public sealed partial class CrExceptionHandler : IExceptionHandler
 {
-    private static readonly CrError[] FallbackInternalErrors =
+    private static readonly CrError[] DefaultInternalErrors =
     [
         new(ErrorCodes.InternalError, "An unexpected internal error occurred.")
     ];
 
     private readonly IProblemDetailsService _problemDetailsService;
-    private readonly ExceptionMappingOptions _options;
+    private readonly CrExceptionOptions _options;
     private readonly ILogger<CrExceptionHandler> _logger;
 
     public CrExceptionHandler(
         IProblemDetailsService problemDetailsService,
-        IOptions<ExceptionMappingOptions> options,
+        IOptions<CrExceptionOptions> options,
         ILogger<CrExceptionHandler> logger)
     {
         _problemDetailsService = problemDetailsService;
@@ -38,7 +39,8 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         }
 
         var httpStatusCode = StatusCodes.Status500InternalServerError;
-        var exceptionTypeFullName = exception.GetType().FullName;
+        var exceptionType = exception.GetType();
+        var exceptionTypeName = exceptionType.FullName ?? exceptionType.Name;
 
         CrError[] errors;
         string detail;
@@ -48,25 +50,25 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             detail = crException.Message;
             errors = crException.Errors;
 
-            var statusCode = _options.FindHttpStatusCode(crException);
+            var statusCode = _options.ExceptionMapping.FindHttpStatusCode(crException);
 
             if (statusCode is null)
             {
-                LogMissingHttpStatusMapping(_logger, exception, exceptionTypeFullName);
+                LogMissingHttpStatusMapping(_logger, exception, exceptionTypeName);
             }
             else
             {
                 httpStatusCode = statusCode.Value;
             }
 
-            LogApplicationException(_logger, exception, exceptionTypeFullName);
+            LogApplicationException(_logger, exception, exceptionTypeName);
         }
         else
         {
             detail = "An unexpected error occurred.";
-            errors = FallbackInternalErrors;
+            errors = DefaultInternalErrors;
 
-            LogUnhandledException(_logger, exception, exceptionTypeFullName);
+            LogUnhandledException(_logger, exception, exceptionTypeName);
         }
 
         var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
@@ -77,7 +79,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             Exception = exception,
             ProblemDetails =
             {
-                Type = "about:blank",
+                Type = _options.ProblemDetails.Type,
                 Status = httpStatusCode,
                 Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
                 Detail = detail,
@@ -104,8 +106,8 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
     {
         if (!problemDetails.Extensions.TryAdd(key, value))
         {
-            LogProblemDetailsExtensionOverwritten(_logger, key);
             problemDetails.Extensions[key] = value;
+            LogProblemDetailsExtensionOverwritten(_logger, key);
         }
     }
 }

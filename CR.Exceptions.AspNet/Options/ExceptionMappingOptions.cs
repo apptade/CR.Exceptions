@@ -1,4 +1,4 @@
-﻿namespace CR.Exceptions.AspNet;
+﻿namespace CR.Exceptions.AspNet.Options;
 
 public sealed class ExceptionMappingOptions
 {

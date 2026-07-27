@@ -12,6 +12,8 @@
 
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+
+    <NuGetPackagePrefix>CrCore</NuGetPackagePrefix>
   </PropertyGroup>
 
   <ItemGroup>

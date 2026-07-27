@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CR.Exceptions.AspNet.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet;
 
