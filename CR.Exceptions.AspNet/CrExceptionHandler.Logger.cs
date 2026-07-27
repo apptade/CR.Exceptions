@@ -12,21 +12,21 @@ public sealed partial class CrExceptionHandler
     [LoggerMessage(
         Level = LogLevel.Warning,
         Message = "No HTTP status code mapping found for exception type '{ExceptionType}'. Using 500 Internal Server Error.")]
-    private static partial void LogMissingHttpStatusMapping(ILogger logger, Exception exception, string? exceptionType);
+    private static partial void LogMissingHttpStatusMapping(ILogger logger, Exception exception, string exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Debug,
         Message = "Application exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogApplicationException(ILogger logger, Exception exception, string? exceptionType);
+    private static partial void LogApplicationException(ILogger logger, Exception exception, string exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "An unexpected exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogUnhandledException(ILogger logger, Exception exception, string? exceptionType);
+    private static partial void LogUnhandledException(ILogger logger, Exception exception, string exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Warning,
-        Message = "ProblemDetails extension key '{Key}' already exists. The value was overwritten.")]
+        Message = "The ProblemDetails extension '{Key}' was overwritten while building the error response.")]
     private static partial void LogProblemDetailsExtensionOverwritten(ILogger logger, string key);
 
     [LoggerMessage(
