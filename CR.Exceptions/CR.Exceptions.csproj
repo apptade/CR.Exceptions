@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-	<Description>Common exception abstractions and error models for .NET applications.</Description>
+    <Description>Common exception abstractions and error models for .NET applications.</Description>
+    <PackageId>$(NuGetPackagePrefix).Exceptions</PackageId>
   </PropertyGroup>
 
 </Project>
