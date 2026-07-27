@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using CR.Exceptions.AspNet.Options;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet.UnitTests;
