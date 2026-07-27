@@ -15,8 +15,8 @@ Or configure custom exception mappings.
 ```csharp
 builder.Services.AddCrExceptionHandler(options =>
 {
-    options.AddDefaultMappings();
-    options.Map<MyCustomException>(499);
+    options.ExceptionMapping.AddDefaultMappings();
+    options.ExceptionMapping.Map<MyCustomException>(499);
 });
 ```
 
@@ -35,20 +35,13 @@ Example:
 ```csharp
 public sealed class UserNotFoundException : NotFoundException
 {
-    public UserNotFoundException(Guid userId)
-        : base(
-        [
-            new CrError(
-                "UserNotFound",
-                $"User '{userId}' was not found.")
-        ],
+    public UserNotFoundException(Guid userId) : base(
+	[new CrError("UserNotFound", $"User '{userId}' was not found.")],
         "User was not found.")
     {
     }
 }
 ```
-
-Each `CrException` contains one or more `CrError` objects.
 
 ```csharp
 public sealed record class CrError(string Code, string Message);
