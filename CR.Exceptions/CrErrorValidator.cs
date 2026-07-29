@@ -13,13 +13,8 @@ internal static class CrErrorValidator
 
         for (var i = 0; i < errors.Length; i++)
         {
-            var error = errors[i] ?? throw new ArgumentNullException(nameof(errors), $"errors[{i}] is null.");
-
-            if (string.IsNullOrWhiteSpace(error.Code))
-                throw new ArgumentException($"errors[{i}].Code cannot be null or whitespace.", nameof(errors));
-
-            if (string.IsNullOrWhiteSpace(error.Message))
-                throw new ArgumentException($"errors[{i}].Message cannot be null or whitespace.", nameof(errors));
+            if (errors[i] is null)
+                throw new ArgumentNullException(nameof(errors), $"errors[{i}] is null.");
         }
     }
 }
