@@ -7,8 +7,8 @@ public sealed record class CrError
 
     public CrError(string code, string message)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(code, nameof(code));
-        ArgumentException.ThrowIfNullOrWhiteSpace(message, nameof(message));
+        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
         Code = code;
         Message = message;
