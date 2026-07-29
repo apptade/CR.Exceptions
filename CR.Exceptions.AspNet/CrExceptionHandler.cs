@@ -14,7 +14,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
 {
     private static readonly ImmutableArray<CrError> DefaultInternalErrors =
     [
-        new(ErrorCodes.InternalError, "An unexpected internal error occurred.")
+        new("InternalError", "An unexpected internal error occurred.")
     ];
 
     private readonly IProblemDetailsService _problemDetailsService;
