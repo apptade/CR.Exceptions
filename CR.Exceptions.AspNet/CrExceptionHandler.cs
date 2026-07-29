@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace CR.Exceptions.AspNet;
 
 public sealed partial class CrExceptionHandler : IExceptionHandler
 {
-    private static readonly CrError[] DefaultInternalErrors =
+    private static readonly ImmutableArray<CrError> DefaultInternalErrors =
     [
         new(ErrorCodes.InternalError, "An unexpected internal error occurred.")
     ];
@@ -42,7 +43,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         var exceptionType = exception.GetType();
         var exceptionTypeName = exceptionType.FullName ?? exceptionType.Name;
 
-        CrError[] errors;
+        ImmutableArray<CrError> errors;
         string detail;
 
         if (exception is CrException crException)

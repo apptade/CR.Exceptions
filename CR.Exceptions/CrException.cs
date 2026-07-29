@@ -1,28 +1,31 @@
-﻿namespace CR.Exceptions;
+﻿using System.Collections.Immutable;
+
+namespace CR.Exceptions;
 
 public abstract class CrException : Exception
 {
-    /// <summary>
-    /// Gets the errors associated with this exception.
-    /// The array is not copied.
-    /// </summary>
-    public CrError[] Errors { get; }
+    public ImmutableArray<CrError> Errors { get; }
 
-    protected CrException(CrError[] errors, string message, Exception? innerException = null) : base(message, innerException)
+    protected CrException(ImmutableArray<CrError> errors, string message, Exception? innerException = null) : base(message, innerException)
     {
-        ArgumentNullException.ThrowIfNull(errors);
         ArgumentException.ThrowIfNullOrWhiteSpace(message);
 
-        if (errors.Length == 0)
+        if (errors.IsDefaultOrEmpty)
         {
             throw new ArgumentException("At least one error must be provided.", nameof(errors));
         }
 
-        foreach (var error in errors)
+        for (var i = 0; i < errors.Length; i++)
         {
-            ArgumentNullException.ThrowIfNull(error, nameof(errors));
-            ArgumentException.ThrowIfNullOrWhiteSpace(error.Code, nameof(errors));
-            ArgumentException.ThrowIfNullOrWhiteSpace(error.Message, nameof(errors));
+            var error = errors[i];
+
+            ArgumentNullException.ThrowIfNull(error);
+
+            if (string.IsNullOrWhiteSpace(error.Code))
+                throw new ArgumentException($"errors[{i}].Code cannot be null or whitespace.", nameof(errors));
+
+            if (string.IsNullOrWhiteSpace(error.Message))
+                throw new ArgumentException($"errors[{i}].Message cannot be null or whitespace.", nameof(errors));
         }
 
         Errors = errors;
