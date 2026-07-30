@@ -11,7 +11,6 @@ public sealed class ErrorMapBuilder
         ArgumentNullException.ThrowIfNull(registration);
 
         _registrations.Add(registration);
-
         return this;
     }
 
@@ -20,7 +19,6 @@ public sealed class ErrorMapBuilder
         ArgumentNullException.ThrowIfNull(registrations);
 
         foreach (var registration in registrations) Add(registration);
-
         return this;
     }
 
