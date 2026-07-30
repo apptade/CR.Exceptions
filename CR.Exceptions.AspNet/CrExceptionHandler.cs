@@ -12,9 +12,7 @@ namespace CR.Exceptions.AspNet;
 public sealed partial class CrExceptionHandler : IExceptionHandler
 {
     private static readonly ImmutableArray<CrError> DefaultInternalErrors =
-    [
-        new("InternalError", "An unexpected internal error occurred.")
-    ];
+        [new("InternalError", "An unexpected internal error occurred.")];
 
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly CrExceptionOptions _options;
@@ -71,8 +69,18 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             LogUnhandledException(_logger, exception, exceptionTypeName);
         }
 
-        var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
+        var traceId = Activity.Current?.TraceId.ToHexString();
+        if (string.IsNullOrEmpty(traceId))
+        {
+            traceId = httpContext.TraceIdentifier;
+        }
+
         var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
+        if (string.IsNullOrEmpty(title))
+        {
+            title = "An error occurred";
+        }
+
         var problemDetailsContext = new ProblemDetailsContext
         {
             HttpContext = httpContext,
@@ -81,7 +89,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             {
                 Type = _options.ProblemDetails.Type,
                 Status = httpStatusCode,
-                Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
+                Title = title,
                 Detail = detail,
                 Instance = httpContext.Request.Path
             },
