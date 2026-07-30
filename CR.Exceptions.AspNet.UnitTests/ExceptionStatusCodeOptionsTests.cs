@@ -1,10 +1,9 @@
-﻿using CR.Exceptions.AspNet.Options;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet.UnitTests;
 
-public sealed class ExceptionMappingOptionsTests
+public sealed class ExceptionStatusCodeOptionsTests
 {
     [Fact]
     public void Should_Return_404_Status_Code_For_NotFoundException()
