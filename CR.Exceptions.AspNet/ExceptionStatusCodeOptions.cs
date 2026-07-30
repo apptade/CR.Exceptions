@@ -1,10 +1,10 @@
-﻿namespace CR.Exceptions.AspNet.Options;
+﻿namespace CR.Exceptions.AspNet;
 
-public sealed class ExceptionMappingOptions
+public sealed class ExceptionStatusCodeOptions
 {
     private readonly Dictionary<Type, int> _map = [];
 
-    public ExceptionMappingOptions Map<TException>(int httpStatusCode) where TException : CrException
+    public ExceptionStatusCodeOptions Map<TException>(int httpStatusCode) where TException : CrException
     {
         if (!_map.TryAdd(typeof(TException), httpStatusCode))
         {

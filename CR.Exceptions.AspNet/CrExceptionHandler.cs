@@ -1,20 +1,16 @@
-﻿using CR.Exceptions.AspNet.Options;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
+using System.Collections.Immutable;
 
 namespace CR.Exceptions.AspNet;
 
 public sealed partial class CrExceptionHandler : IExceptionHandler
 {
-    private static readonly CrError[] DefaultInternalErrors =
-    [
-        new(ErrorCodes.InternalError, "An unexpected internal error occurred.")
-    ];
+    private static readonly ImmutableArray<CrError> DefaultInternalErrors =
+        [new("InternalError", "An unexpected internal error occurred.")];
 
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly CrExceptionOptions _options;
@@ -42,15 +38,15 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         var exceptionType = exception.GetType();
         var exceptionTypeName = exceptionType.FullName ?? exceptionType.Name;
 
-        CrError[] errors;
-        string detail;
+        var errors = DefaultInternalErrors;
+        var detail = "An unexpected error occurred.";
 
         if (exception is CrException crException)
         {
             detail = crException.Message;
             errors = crException.Errors;
 
-            var statusCode = _options.ExceptionMapping.FindHttpStatusCode(crException);
+            var statusCode = _options.StatusCodes.FindHttpStatusCode(crException);
 
             if (statusCode is null)
             {
@@ -65,32 +61,23 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         }
         else
         {
-            detail = "An unexpected error occurred.";
-            errors = DefaultInternalErrors;
-
             LogUnhandledException(_logger, exception, exceptionTypeName);
         }
 
-        var traceId = Activity.Current?.TraceId.ToHexString() ?? httpContext.TraceIdentifier;
-        var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
+        httpContext.Response.StatusCode = httpStatusCode;
+
         var problemDetailsContext = new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
             ProblemDetails =
             {
-                Type = _options.ProblemDetails.Type,
                 Status = httpStatusCode,
-                Title = string.IsNullOrWhiteSpace(title) ? "An error occurred" : title,
                 Detail = detail,
                 Instance = httpContext.Request.Path
             },
         };
-
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.TraceId, traceId);
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
-
-        httpContext.Response.StatusCode = httpStatusCode;
 
         var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
 

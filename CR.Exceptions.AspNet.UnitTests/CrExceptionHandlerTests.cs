@@ -1,59 +1,74 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using Xunit.Abstractions;
 
 namespace CR.Exceptions.AspNet.UnitTests;
 
 public sealed class CrExceptionHandlerTests
 {
+    private static readonly JsonSerializerOptions _prettyJsonOptions = new(JsonSerializerOptions.Web) { WriteIndented = true };
+
     private readonly ITestOutputHelper _output;
-    private readonly JsonSerializerOptions _jsonOptions;
 
     public CrExceptionHandlerTests(ITestOutputHelper output)
     {
         _output = output;
-        _jsonOptions = new()
-        {
-            WriteIndented = true,
-            PropertyNameCaseInsensitive = true
-        };
     }
 
     [Fact]
     public Task Should_Return_404_For_NotFoundException()
     {
-        return ShouldReturnStatusCode(new TestNotFoundException(), StatusCodes.Status404NotFound);
+        return AssertHandlerResult(
+            new TestNotFoundException(),
+            StatusCodes.Status404NotFound,
+            canCreateActivity: true);
     }
 
     [Fact]
     public Task Should_Return_500_For_UnhandledException()
     {
-        return ShouldReturnStatusCode(new Exception("Something went wrong"), StatusCodes.Status500InternalServerError);
+        return AssertHandlerResult(
+            new Exception("Unknown exception"),
+            StatusCodes.Status500InternalServerError,
+            canCreateActivity: true);
     }
 
-    private async Task ShouldReturnStatusCode(Exception exception, int expectedStatusCode)
+    [Fact]
+    public Task Should_Return_500_For_UnhandledException_When_Activity_Is_Missing()
     {
+        return AssertHandlerResult(
+            new Exception("Unknown exception"),
+            StatusCodes.Status500InternalServerError,
+            canCreateActivity: false);
+    }
+
+    private async Task AssertHandlerResult(Exception exception, int expectedStatusCode, bool canCreateActivity)
+    {
+        using var activity = canCreateActivity
+            ? new Activity("TestActivity").Start()
+            : null;
+
         using var provider = CreateServiceProvider();
-
         var handler = provider.GetRequiredService<IExceptionHandler>();
-        var context = CreateContext();
 
-        var result = await handler.TryHandleAsync(
-            context,
-            exception,
-            CancellationToken.None);
+        using var responseStream = new MemoryStream();
+        var context = CreateContext(responseStream);
 
-        await LogResponseBody(context);
+        var isHandled = await handler.TryHandleAsync(context, exception, CancellationToken.None);
 
-        result.Should().BeTrue();
-        context.Response.StatusCode.Should().Be(expectedStatusCode);
+        Assert.True(isHandled);
+        Assert.Equal(expectedStatusCode, context.Response.StatusCode);
+        Assert.Contains("application/problem+json", context.Response.ContentType);
 
-        var problem = await DeserializeProblemDetails(context);
-        AssertProblemDetails(problem!, context, expectedStatusCode);
+        responseStream.Position = 0;
+
+        var problem = await JsonSerializer.DeserializeAsync<CustomProblemDetails>(responseStream, JsonSerializerOptions.Web);
+        var expectedTraceId = activity?.TraceId.ToHexString() ?? context.TraceIdentifier;
+
+        AssertProblemDetails(problem, context, expectedStatusCode, expectedTraceId);
     }
 
     private static ServiceProvider CreateServiceProvider()
@@ -64,55 +79,40 @@ public sealed class CrExceptionHandlerTests
             .BuildServiceProvider();
     }
 
-    private static DefaultHttpContext CreateContext()
+    private static DefaultHttpContext CreateContext(MemoryStream responseStream)
     {
         return new DefaultHttpContext
         {
-            Response =
-            {
-                Body = new MemoryStream()
-            }
+            Request = { Path = "/api/test" },
+            Response = { Body = responseStream }
         };
     }
 
-    private async Task<ProblemDetailsResponse> DeserializeProblemDetails(HttpContext context)
+    private void AssertProblemDetails(CustomProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
     {
-        context.Response.Body.Position = 0;
+        Assert.NotNull(problem);
 
-        return (await JsonSerializer.DeserializeAsync<ProblemDetailsResponse>(
-            context.Response.Body, _jsonOptions))!;
+        _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
+
+        Assert.False(string.IsNullOrEmpty(problem.Type));
+        Assert.False(string.IsNullOrEmpty(problem.Title));
+        Assert.False(string.IsNullOrEmpty(problem.Detail));
+
+        Assert.Equal(expectedStatusCode, problem.Status);
+        Assert.Equal(context.Request.Path, problem.Instance);
+
+        Assert.True(problem.Extensions.TryGetValue(
+                ProblemDetailsExtensionNames.TraceId,
+                out var traceId));
+
+        Assert.Equal(expectedTraceId, traceId?.ToString());
+
+        Assert.NotNull(problem.Errors);
+        Assert.NotEmpty(problem.Errors);
     }
 
-    private async Task LogResponseBody(DefaultHttpContext context)
+    private sealed class CustomProblemDetails : ProblemDetails
     {
-        context.Response.Body.Position = 0;
-        var jsonNode = await JsonNode.ParseAsync(context.Response.Body);
-        _output.WriteLine(jsonNode?.ToJsonString(_jsonOptions));
-    }
-
-    private static void AssertProblemDetails(ProblemDetailsResponse problem, HttpContext context, int expectedStatusCode)
-    {
-        problem.Should().NotBeNull();
-
-        problem.Type.Should().NotBeNullOrWhiteSpace();
-        problem.Title.Should().NotBeNullOrWhiteSpace();
-        problem.Detail.Should().NotBeNullOrWhiteSpace();
-
-        problem.Status.Should().Be(expectedStatusCode);
-        problem.Instance.Should().Be(context.Request.Path);
-
-        problem.TraceId.Should().NotBeNullOrWhiteSpace();
-        problem.Errors.Should().NotBeNull().And.NotBeEmpty();
-    }
-
-    private sealed class ProblemDetailsResponse
-    {
-        public string? Type { get; set; }
-        public string? Title { get; set; }
-        public int? Status { get; set; }
-        public string? Detail { get; set; }
-        public string? Instance { get; set; }
-        public string? TraceId { get; set; }
         public CrError[]? Errors { get; set; }
     }
 }

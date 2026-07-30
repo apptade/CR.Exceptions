@@ -1,13 +1,12 @@
-﻿using CR.Exceptions.AspNet.Options;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet;
 
-public static class ExceptionMappingOptionsExtensions
+public static class ExceptionStatusCodeOptionsExtensions
 {
-    extension(ExceptionMappingOptions options)
+    extension(ExceptionStatusCodeOptions options)
     {
-        public ExceptionMappingOptions AddDefaultMappings()
+        public ExceptionStatusCodeOptions AddDefaultMappings()
         {
             return options
                 .Map<ValidationException>(StatusCodes.Status400BadRequest)
