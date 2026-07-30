@@ -19,14 +19,16 @@ public sealed class ExceptionFactory
             return exception;
         }
 
-        throw new KeyNotFoundException($"Exception with code '{code}' is not found.");
+        throw new KeyNotFoundException($"Exception factory with code '{code}' is not found.");
     }
 
     public bool TryCreate(string code, [MaybeNullWhen(false)] out CrException exception)
     {
         if (_map.TryGetValue(code, out var registration))
         {
-            exception = registration.Factory(registration.Definition.Errors);
+            exception = registration.Factory(registration.Definition.Errors)
+                ?? throw new NullReferenceException("The registered factory return null exception");
+
             return true;
         }
 
