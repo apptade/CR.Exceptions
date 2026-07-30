@@ -96,16 +96,15 @@ user_not_found
 These codes can be registered in `ErrorMap` and converted into application-level errors:
 
 ```csharp
-var _errorMap = _errorMapBuilder.Add(new ErrorRegistration(
+ErrorMap errorMap = _errorMapBuilder.Add(new ErrorRegistration(
     "user_not_found",
-    [new CrError("Identity.UserNotFound", "User was not found.")]))
-        .Build();
+    [new CrError("IdentityUserNotFound", "User was not found.")])).Build();
 ````
 
 After registration, the application can resolve errors by external code:
 
 ```csharp
-if (_errorMap.TryGet("user_not_found", out var errors))
+if (errorMap.TryGet("user_not_found", out var errors))
 {
     throw new UserNotFoundException(errors);
 }
@@ -140,19 +139,18 @@ Example registration:
 ```csharp
 var registration = new ErrorRegistration(
     "invalid_grant",
-    [new CrError("Identity.InvalidCredentials", "Invalid username or password.")]);
+    [new CrError("IdentityInvalidCredentials", "Invalid username or password.")]);
 
-var _factory = _exceptionFactoryBuilder.Add(
+ExceptionFactory factory = _exceptionFactoryBuilder.Add(
     new ExceptionRegistration(
         registration,
-        errors => new InvalidCredentialsException(errors)))
-            .Build();
+        errors => new InvalidCredentialsException(errors))).Build();
 ```
 
 After registration:
 
 ```csharp
-var exception = _factory.Create("invalid_grant");
+var exception = factory.Create("invalid_grant");
 throw exception;
 ```
 
@@ -169,18 +167,18 @@ Example response:
 
 ```json
 {
-  "type": "about:blank",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
   "title": "Not Found",
   "status": 404,
-  "detail": "User was not found.",
-  "instance": "/api/users/123",
-  "traceId": "0HNNAF6ABMHQO",
+  "detail": "The requested resource was not found.",
+  "instance": "/api/test",
   "errors": [
     {
-      "code": "Identity.UserNotFound",
-      "message": "User '123' was not found."
+      "code": "TestNotFound",
+      "message": "Test Entity not found"
     }
-  ]
+  ],
+  "traceId": "5a1192a06ca5cd006057ca7e6b84e231"
 }
 ```
 
@@ -196,15 +194,17 @@ Example:
 
 ```json
 {
-  "type": "about:blank",
-  "title": "Internal Server Error",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+  "title": "An error occurred while processing your request.",
   "status": 500,
   "detail": "An unexpected error occurred.",
+  "instance": "/api/test",
   "errors": [
     {
       "code": "InternalError",
       "message": "An unexpected internal error occurred."
     }
-  ]
+  ],
+  "traceId": "3e071f69b5f9e695a32a699369b57651"
 }
 ```
