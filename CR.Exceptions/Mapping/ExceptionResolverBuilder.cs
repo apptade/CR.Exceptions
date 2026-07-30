@@ -2,11 +2,11 @@
 
 namespace CR.Exceptions.Mapping;
 
-public sealed class ExceptionFactoryBuilder
+public sealed class ExceptionResolverBuilder
 {
     private readonly List<ExceptionRegistration> _registrations = [];
 
-    public ExceptionFactoryBuilder Add(ExceptionRegistration registration)
+    public ExceptionResolverBuilder Add(ExceptionRegistration registration)
     {
         ArgumentNullException.ThrowIfNull(registration);
 
@@ -15,7 +15,7 @@ public sealed class ExceptionFactoryBuilder
         return this;
     }
 
-    public ExceptionFactoryBuilder AddRange(IEnumerable<ExceptionRegistration> registrations)
+    public ExceptionResolverBuilder AddRange(IEnumerable<ExceptionRegistration> registrations)
     {
         ArgumentNullException.ThrowIfNull(registrations);
 
@@ -24,7 +24,7 @@ public sealed class ExceptionFactoryBuilder
         return this;
     }
 
-    public ExceptionFactory Build()
+    public ExceptionResolver Build()
     {
         return new(_registrations.ToFrozenDictionary(keySelector: k => k.Error.Code, comparer: StringComparer.Ordinal));
     }
