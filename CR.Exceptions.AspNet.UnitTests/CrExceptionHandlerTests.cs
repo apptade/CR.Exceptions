@@ -21,18 +21,36 @@ public sealed class CrExceptionHandlerTests
     [Fact]
     public Task Should_Return_404_For_NotFoundException()
     {
-        return AssertHandlerResult(new TestNotFoundException(), StatusCodes.Status404NotFound);
+        return AssertHandlerResult(
+            new TestNotFoundException(),
+            StatusCodes.Status404NotFound,
+            canCreateActivity: true);
     }
 
     [Fact]
     public Task Should_Return_500_For_UnhandledException()
     {
-        return AssertHandlerResult(new TestUnregisteredException(), StatusCodes.Status500InternalServerError);
+        return AssertHandlerResult(
+            new Exception("Unknown exception"),
+            StatusCodes.Status500InternalServerError,
+            canCreateActivity: true);
     }
 
-    private async Task AssertHandlerResult(Exception exception, int expectedStatusCode)
+    [Fact]
+    public Task Should_Use_HttpContext_TraceIdentifier_When_Activity_Is_Missing()
     {
-        using var activity = new Activity("TestActivity").Start();
+        return AssertHandlerResult(
+            new Exception("Unknown exception"),
+            StatusCodes.Status500InternalServerError,
+            canCreateActivity: false);
+    }
+
+    private async Task AssertHandlerResult(Exception exception, int expectedStatusCode, bool canCreateActivity)
+    {
+        using var activity = canCreateActivity
+            ? new Activity("TestActivity").Start()
+            : null;
+
         using var provider = CreateServiceProvider();
         var handler = provider.GetRequiredService<IExceptionHandler>();
 
@@ -46,9 +64,11 @@ public sealed class CrExceptionHandlerTests
         Assert.Contains("application/problem+json", context.Response.ContentType);
 
         responseStream.Position = 0;
-        var problem = await JsonSerializer.DeserializeAsync<CustomProblemDetails>(responseStream, JsonSerializerOptions.Web);
 
-        AssertProblemDetails(problem, context, expectedStatusCode, activity.TraceId.ToHexString());
+        var problem = await JsonSerializer.DeserializeAsync<CustomProblemDetails>(responseStream, JsonSerializerOptions.Web);
+        var expectedTraceId = activity?.TraceId.ToHexString() ?? context.TraceIdentifier;
+
+        AssertProblemDetails(problem, context, expectedStatusCode, expectedTraceId);
     }
 
     private static ServiceProvider CreateServiceProvider()
@@ -71,6 +91,7 @@ public sealed class CrExceptionHandlerTests
     private void AssertProblemDetails(CustomProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
     {
         Assert.NotNull(problem);
+
         _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
 
         Assert.False(string.IsNullOrEmpty(problem.Type));
@@ -80,8 +101,11 @@ public sealed class CrExceptionHandlerTests
         Assert.Equal(expectedStatusCode, problem.Status);
         Assert.Equal(context.Request.Path, problem.Instance);
 
-        var actualTraceId = problem.Extensions.TryGetValue(ProblemDetailsExtensionNames.TraceId, out var id) ? id?.ToString() : null;
-        Assert.Equal(expectedTraceId, actualTraceId);
+        Assert.True(problem.Extensions.TryGetValue(
+                ProblemDetailsExtensionNames.TraceId,
+                out var traceId));
+
+        Assert.Equal(expectedTraceId, traceId?.ToString());
 
         Assert.NotNull(problem.Errors);
         Assert.NotEmpty(problem.Errors);

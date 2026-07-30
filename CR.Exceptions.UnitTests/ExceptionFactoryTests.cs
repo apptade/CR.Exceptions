@@ -5,10 +5,10 @@ namespace CR.Exceptions.UnitTests;
 public sealed class ExceptionFactoryTests
 {
     [Fact]
-    public void Create_ShouldReturnRegisteredException()
+    public void Create_ShouldReturnRegisteredException_WhenCodeExists()
     {
-        var errorCode = "TestError";
-        var registrationCode = "test_error";
+        const string errorCode = "TestError";
+        const string registrationCode = "test_error";
 
         var errorRegistration = new ErrorRegistration(registrationCode, [new(errorCode, "Something went wrong.")]);
         var exceptionRegistration = new ExceptionRegistration(errorRegistration, errors => new TestException(errors));
@@ -19,8 +19,8 @@ public sealed class ExceptionFactoryTests
 
         var exception = factory.Create(registrationCode);
 
-        Assert.IsType<TestException>(exception);
-        var singleError = Assert.Single(exception.Errors);
+        var typedException = Assert.IsType<TestException>(exception);
+        var singleError = Assert.Single(typedException.Errors);
         Assert.Equal(errorCode, singleError.Code);
     }
 
@@ -28,7 +28,8 @@ public sealed class ExceptionFactoryTests
     public void TryCreate_ShouldReturnFalse_WhenCodeNotExist()
     {
         var factory = new ExceptionFactoryBuilder().Build();
-        var result = factory.TryCreate("random", out var exception);
+
+        var result = factory.TryCreate("non_existent_code", out var exception);
 
         Assert.False(result);
         Assert.Null(exception);

@@ -7,8 +7,8 @@ public sealed class ErrorMapTests
     [Fact]
     public void TryGet_ShouldReturnErrors_WhenCodeExists()
     {
-        var errorCode = "InvalidGrant";
-        var registrationCode = "invalid_grant";
+        const string errorCode = "InvalidGrant";
+        const string registrationCode = "invalid_grant";
 
         var registration = new ErrorRegistration(registrationCode, [new(errorCode, "Invalid username or password.")]);
 
@@ -27,7 +27,8 @@ public sealed class ErrorMapTests
     public void TryGet_ShouldReturnFalse_WhenCodeNotExist()
     {
         var map = new ErrorMapBuilder().Build();
-        var result = map.TryGet("random", out var errors);
+
+        var result = map.TryGet("non_existent_code", out var errors);
 
         Assert.False(result);
         Assert.True(errors.IsDefaultOrEmpty);
