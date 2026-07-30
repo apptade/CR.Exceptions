@@ -9,6 +9,8 @@ namespace CR.Exceptions.AspNet.UnitTests;
 
 public sealed class CrExceptionHandlerTests
 {
+    private static readonly JsonSerializerOptions _prettyJsonOptions = new(JsonSerializerOptions.Web) { WriteIndented = true };
+
     private readonly ITestOutputHelper _output;
 
     public CrExceptionHandlerTests(ITestOutputHelper output)
@@ -46,7 +48,7 @@ public sealed class CrExceptionHandlerTests
         responseStream.Position = 0;
         var problem = await JsonSerializer.DeserializeAsync<CustomProblemDetails>(responseStream, JsonSerializerOptions.Web);
 
-        AssertProblemDetails(problem, context, expectedStatusCode, activity.Id);
+        AssertProblemDetails(problem, context, expectedStatusCode, activity.TraceId.ToHexString());
     }
 
     private static ServiceProvider CreateServiceProvider()
@@ -69,7 +71,7 @@ public sealed class CrExceptionHandlerTests
     private void AssertProblemDetails(CustomProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
     {
         Assert.NotNull(problem);
-        _output.WriteLine(JsonSerializer.Serialize(problem, options: new(JsonSerializerOptions.Web) { WriteIndented = true }));
+        _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
 
         Assert.False(string.IsNullOrEmpty(problem.Type));
         Assert.False(string.IsNullOrEmpty(problem.Title));
@@ -78,8 +80,8 @@ public sealed class CrExceptionHandlerTests
         Assert.Equal(expectedStatusCode, problem.Status);
         Assert.Equal(context.Request.Path, problem.Instance);
 
-        var actualTraceId = problem.Extensions.TryGetValue("traceId", out var id) ? id?.ToString() : null;
-        Assert.Equal(expectedTraceId, actualTraceId ?? context.TraceIdentifier);
+        var actualTraceId = problem.Extensions.TryGetValue(ProblemDetailsExtensionNames.TraceId, out var id) ? id?.ToString() : null;
+        Assert.Equal(expectedTraceId, actualTraceId);
 
         Assert.NotNull(problem.Errors);
         Assert.NotEmpty(problem.Errors);
