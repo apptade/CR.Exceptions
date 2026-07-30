@@ -1,10 +1,8 @@
-﻿using FluentAssertions;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Xunit.Abstractions;
 
 namespace CR.Exceptions.AspNet.UnitTests;
 
@@ -49,8 +47,8 @@ public sealed class CrExceptionHandlerTests
 
         await LogResponseBody(context);
 
-        result.Should().BeTrue();
-        context.Response.StatusCode.Should().Be(expectedStatusCode);
+        Assert.True(result);
+        Assert.Equal(expectedStatusCode, context.Response.StatusCode);
 
         var problem = await DeserializeProblemDetails(context);
         AssertProblemDetails(problem!, context, expectedStatusCode);
@@ -92,17 +90,19 @@ public sealed class CrExceptionHandlerTests
 
     private static void AssertProblemDetails(ProblemDetailsResponse problem, HttpContext context, int expectedStatusCode)
     {
-        problem.Should().NotBeNull();
+        Assert.NotNull(problem);
 
-        problem.Type.Should().NotBeNullOrWhiteSpace();
-        problem.Title.Should().NotBeNullOrWhiteSpace();
-        problem.Detail.Should().NotBeNullOrWhiteSpace();
+        Assert.False(string.IsNullOrWhiteSpace(problem.Type));
+        Assert.False(string.IsNullOrWhiteSpace(problem.Title));
+        Assert.False(string.IsNullOrWhiteSpace(problem.Detail));
 
-        problem.Status.Should().Be(expectedStatusCode);
-        problem.Instance.Should().Be(context.Request.Path);
+        Assert.Equal(expectedStatusCode, problem.Status);
+        Assert.Equal(context.Request.Path, problem.Instance);
 
-        problem.TraceId.Should().NotBeNullOrWhiteSpace();
-        problem.Errors.Should().NotBeNull().And.NotBeEmpty();
+        Assert.False(string.IsNullOrWhiteSpace(problem.TraceId));
+
+        Assert.NotNull(problem.Errors);
+        Assert.NotEmpty(problem.Errors);
     }
 
     private sealed class ProblemDetailsResponse
