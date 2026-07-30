@@ -9,7 +9,7 @@ public sealed class ExceptionMappingOptionsTests
     [Fact]
     public void Should_Return_404_Status_Code_For_NotFoundException()
     {
-        var options = new ExceptionMappingOptions().AddDefaultMappings();
+        var options = new ExceptionStatusCodeOptions().AddDefaultMappings();
         var exception = new TestNotFoundException();
 
         var statusCode = options.FindHttpStatusCode(exception);

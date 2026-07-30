@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.AspNet.Options;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace CR.Exceptions.AspNet;
 
@@ -11,7 +10,7 @@ public static class ServiceCollectionExtensions
         {
             return services.AddCrExceptionHandler(options =>
             {
-                options.ExceptionMapping.AddDefaultMappings();
+                options.StatusCodes.AddDefaultMappings();
             });
         }
 

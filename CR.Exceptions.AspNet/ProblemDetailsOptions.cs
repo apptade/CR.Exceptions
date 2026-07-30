@@ -1,4 +1,4 @@
-﻿namespace CR.Exceptions.AspNet.Options;
+﻿namespace CR.Exceptions.AspNet;
 
 public sealed class ProblemDetailsOptions
 {

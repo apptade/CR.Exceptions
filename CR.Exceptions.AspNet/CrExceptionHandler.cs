@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.AspNet.Options;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -51,7 +50,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             detail = crException.Message;
             errors = crException.Errors;
 
-            var statusCode = _options.ExceptionMapping.FindHttpStatusCode(crException);
+            var statusCode = _options.StatusCodes.FindHttpStatusCode(crException);
 
             if (statusCode is null)
             {
