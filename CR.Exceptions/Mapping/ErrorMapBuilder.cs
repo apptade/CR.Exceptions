@@ -1,4 +1,4 @@
-﻿using System.Collections.Frozen;
+﻿using CR.Exceptions.Extensions;
 
 namespace CR.Exceptions.Mapping;
 
@@ -26,6 +26,9 @@ public sealed class ErrorMapBuilder
 
     public ErrorMap Build()
     {
-        return new(_registrations.ToFrozenDictionary(keySelector: k => k.Code, comparer: StringComparer.Ordinal));
+        return new(_registrations.ToUniqueFrozenDictionary(
+            keySelector: k => k.Code,
+            elementSelector: v => v,
+            comparer: StringComparer.Ordinal));
     }
 }
