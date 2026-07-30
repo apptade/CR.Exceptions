@@ -3,18 +3,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CR.Exceptions.Mapping;
 
-public sealed class ExceptionResolver
+public sealed class ExceptionFactory
 {
     private readonly FrozenDictionary<string, ExceptionRegistration> _map;
 
-    internal ExceptionResolver(FrozenDictionary<string, ExceptionRegistration> map)
+    internal ExceptionFactory(FrozenDictionary<string, ExceptionRegistration> map)
     {
         _map = map;
     }
 
-    public CrException Resolve(string code)
+    public CrException Create(string code)
     {
-        if (TryResolve(code, out var exception))
+        if (TryCreate(code, out var exception))
         {
             return exception;
         }
@@ -22,7 +22,7 @@ public sealed class ExceptionResolver
         throw new KeyNotFoundException($"Exception with code '{code}' is not found.");
     }
 
-    public bool TryResolve(string code, [MaybeNullWhen(false)] out CrException exception)
+    public bool TryCreate(string code, [MaybeNullWhen(false)] out CrException exception)
     {
         if (_map.TryGetValue(code, out var registration))
         {
