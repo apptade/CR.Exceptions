@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using CR.Exceptions.Extensions;
+using System.Collections.Immutable;
 
 namespace CR.Exceptions.Mapping;
 
@@ -10,7 +11,7 @@ public sealed record class ErrorRegistration
     public ErrorRegistration(string code, ImmutableArray<CrError> errors)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(code);
-        CrErrorValidator.ThrowExceptionIfInvalid(errors);
+        errors.ThrowIfEmptyOrContainsNull();
 
         Code = code;
         Errors = errors;
