@@ -4,27 +4,23 @@ namespace CR.Exceptions.Mapping;
 
 public sealed class ExceptionFactoryBuilder
 {
-    private readonly List<ExceptionRegistration> _registrations = [];
+    private readonly RegistrationCollection<ExceptionRegistration> _collection = new();
 
     public ExceptionFactoryBuilder Add(ExceptionRegistration registration)
     {
-        ArgumentNullException.ThrowIfNull(registration);
-
-        _registrations.Add(registration);
+        _collection.Add(registration);
         return this;
     }
 
     public ExceptionFactoryBuilder AddRange(IEnumerable<ExceptionRegistration> registrations)
     {
-        ArgumentNullException.ThrowIfNull(registrations);
-
-        foreach (var registration in registrations) Add(registration);
+        _collection.AddRange(registrations);
         return this;
     }
 
     public ExceptionFactory Build()
     {
-        return new(_registrations.ToUniqueFrozenDictionary(
+        return new(_collection.Items.ToUniqueFrozenDictionary(
             keySelector: k => k.Definition.Code,
             elementSelector: v => v,
             comparer: StringComparer.Ordinal));
