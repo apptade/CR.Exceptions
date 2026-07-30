@@ -37,7 +37,7 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public Task Should_Use_HttpContext_TraceIdentifier_When_Activity_Is_Missing()
+    public Task Should_Return_500_For_UnhandledException_When_Activity_Is_Missing()
     {
         return AssertHandlerResult(
             new Exception("Unknown exception"),
