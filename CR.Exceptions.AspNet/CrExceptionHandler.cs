@@ -38,8 +38,8 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         var exceptionType = exception.GetType();
         var exceptionTypeName = exceptionType.FullName ?? exceptionType.Name;
 
-        ImmutableArray<CrError> errors;
-        string detail;
+        var errors = DefaultInternalErrors;
+        var detail = "An unexpected error occurred.";
 
         if (exception is CrException crException)
         {
@@ -61,11 +61,10 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         }
         else
         {
-            detail = "An unexpected error occurred.";
-            errors = DefaultInternalErrors;
-
             LogUnhandledException(_logger, exception, exceptionTypeName);
         }
+
+        httpContext.Response.StatusCode = httpStatusCode;
 
         var problemDetailsContext = new ProblemDetailsContext
         {
@@ -78,9 +77,6 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
                 Instance = httpContext.Request.Path
             },
         };
-
-        httpContext.Response.StatusCode = httpStatusCode;
-
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
