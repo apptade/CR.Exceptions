@@ -1,5 +1,4 @@
 ﻿using CR.Exceptions.Mapping;
-using System.Collections.Immutable;
 
 namespace CR.Exceptions.UnitTests;
 
@@ -11,54 +10,37 @@ public sealed class ErrorMapTests
         var errorCode = "InvalidGrant";
         var registrationCode = "invalid_grant";
 
-        ImmutableArray<CrError> errors =
-        [
-            new CrError(errorCode, "Invalid username or password.")
-        ];
-
-        var registration = new ErrorRegistration(registrationCode, errors);
+        var registration = new ErrorRegistration(registrationCode, [new(errorCode, "Invalid username or password.")]);
 
         var map = new ErrorMapBuilder()
             .Add(registration)
             .Build();
 
-        var result = map.TryGet(
-            registrationCode,
-            out var resolvedErrors);
+        var result = map.TryGet(registrationCode, out var errors);
 
         Assert.True(result);
-        var singleError = Assert.Single(resolvedErrors);
+        var singleError = Assert.Single(errors);
         Assert.Equal(errorCode, singleError.Code);
     }
 
     [Fact]
-    public void TryGet_ShouldReturnFalse_WhenCodeDoesNotExist()
+    public void TryGet_ShouldReturnFalse_WhenCodeNotExist()
     {
-        var map = new ErrorMapBuilder()
-            .Build();
-
-        var result = map.TryGet(
-            "unknown",
-            out var errors);
+        var map = new ErrorMapBuilder().Build();
+        var result = map.TryGet("random", out var errors);
 
         Assert.False(result);
-        Assert.True(errors.IsEmpty);
+        Assert.True(errors.IsDefaultOrEmpty);
     }
 
     [Fact]
     public void Build_ShouldThrow_WhenDuplicateCodesRegistered()
     {
-        var first = new ErrorRegistration(
-            "duplicate",
-            [new("Code.One", "First")]);
-
-        var second = new ErrorRegistration(
-            "duplicate",
-            [new("Code.Two", "Second")]);
+        var errorRegistration = new ErrorRegistration("duplicate", [new("code", "message")]);
 
         var builder = new ErrorMapBuilder()
-            .Add(first)
-            .Add(second);
+            .Add(errorRegistration)
+            .Add(errorRegistration);
 
         Assert.Throws<InvalidOperationException>(builder.Build);
     }
