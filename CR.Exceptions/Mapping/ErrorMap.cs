@@ -7,15 +7,19 @@ public sealed class ErrorMap
 {
     private readonly FrozenDictionary<string, ErrorRegistration> _map;
 
-    public ErrorMap(FrozenDictionary<string, ErrorRegistration> map)
+    internal ErrorMap(FrozenDictionary<string, ErrorRegistration> map)
     {
         _map = map;
     }
 
-    public ImmutableArray<CrError> GetOrDefault(string code)
+    public ImmutableArray<CrError> Get(string code)
     {
-        TryGet(code, out var errors);
-        return errors;
+        if (TryGet(code, out var errors))
+        {
+            return errors;
+        }
+
+        throw new KeyNotFoundException($"Collection with code '{code}' is not found.");
     }
 
     public bool TryGet(string code, out ImmutableArray<CrError> errors)
@@ -26,7 +30,7 @@ public sealed class ErrorMap
             return true;
         }
 
-        errors = default;
+        errors = [];
         return false;
     }
 }

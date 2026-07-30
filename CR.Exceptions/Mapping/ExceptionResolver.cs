@@ -7,7 +7,7 @@ public sealed class ExceptionResolver
 {
     private readonly FrozenDictionary<string, ExceptionRegistration> _map;
 
-    public ExceptionResolver(FrozenDictionary<string, ExceptionRegistration> map)
+    internal ExceptionResolver(FrozenDictionary<string, ExceptionRegistration> map)
     {
         _map = map;
     }
@@ -26,7 +26,7 @@ public sealed class ExceptionResolver
     {
         if (_map.TryGetValue(code, out var registration))
         {
-            exception = registration.Factory(registration.Error.Errors);
+            exception = registration.Factory(registration.Definition.Errors);
             return true;
         }
 

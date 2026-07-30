@@ -27,7 +27,7 @@ public sealed class ExceptionResolverBuilder
     public ExceptionResolver Build()
     {
         return new(_registrations.ToUniqueFrozenDictionary(
-            keySelector: k => k.Error.Code,
+            keySelector: k => k.Definition.Code,
             elementSelector: v => v,
             comparer: StringComparer.Ordinal));
     }
