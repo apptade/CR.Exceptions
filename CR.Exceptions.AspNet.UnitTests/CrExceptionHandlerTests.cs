@@ -84,8 +84,9 @@ public sealed class CrExceptionHandlerTests
     private async Task LogResponseBody(DefaultHttpContext context)
     {
         context.Response.Body.Position = 0;
+
         var jsonNode = await JsonNode.ParseAsync(context.Response.Body);
-        _output.WriteLine(jsonNode?.ToJsonString(_jsonOptions));
+        if (jsonNode is not null) _output.WriteLine(jsonNode.ToJsonString(_jsonOptions));
     }
 
     private static void AssertProblemDetails(ProblemDetailsResponse problem, HttpContext context, int expectedStatusCode)
