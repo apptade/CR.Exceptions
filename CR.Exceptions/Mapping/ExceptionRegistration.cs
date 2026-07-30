@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace CR.Exceptions.Map;
+namespace CR.Exceptions.Mapping;
 
 public sealed record class ExceptionRegistration
 {

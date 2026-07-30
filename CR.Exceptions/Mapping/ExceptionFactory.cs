@@ -1,6 +1,6 @@
 ﻿using System.Collections.Frozen;
 
-namespace CR.Exceptions.Map;
+namespace CR.Exceptions.Mapping;
 
 public sealed class ExceptionFactory
 {
