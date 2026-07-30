@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Immutable;
-using System.Diagnostics;
 
 namespace CR.Exceptions.AspNet;
 
@@ -69,36 +67,21 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             LogUnhandledException(_logger, exception, exceptionTypeName);
         }
 
-        var traceId = Activity.Current?.TraceId.ToHexString();
-        if (string.IsNullOrEmpty(traceId))
-        {
-            traceId = httpContext.TraceIdentifier;
-        }
-
-        var title = ReasonPhrases.GetReasonPhrase(httpStatusCode);
-        if (string.IsNullOrEmpty(title))
-        {
-            title = "An error occurred";
-        }
-
         var problemDetailsContext = new ProblemDetailsContext
         {
             HttpContext = httpContext,
             Exception = exception,
             ProblemDetails =
             {
-                Type = _options.ProblemDetails.Type,
                 Status = httpStatusCode,
-                Title = title,
                 Detail = detail,
                 Instance = httpContext.Request.Path
             },
         };
 
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.TraceId, traceId);
-        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
-
         httpContext.Response.StatusCode = httpStatusCode;
+
+        AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
 
