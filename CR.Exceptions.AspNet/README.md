@@ -10,7 +10,6 @@ This package provides automatic handling of `CrException` instances, converts th
 - RFC 7807 `ProblemDetails` responses
 - Configurable exception → HTTP status code mapping
 - Configurable exception → log level mapping
-- Automatic serialization of `CrException`
 - Generic handling of unexpected exceptions
 
 ---
@@ -29,22 +28,9 @@ builder.Services.AddCrExceptions();
 app.UseExceptionHandler();
 ```
 
-If you need more control, individual components can be registered separately.
-
-```csharp
-builder.Services
-    .AddCrExceptionHandler()
-    .AddCrStatusCodeMapping()
-    .AddCrLogLevelMapping();
-
-app.UseExceptionHandler();
-```
-
 ---
 
 # Default HTTP Status Code Mapping
-
-The package provides default mappings for the built-in exception categories.
 
 | Exception | HTTP Status |
 |-----------|------------:|
@@ -56,26 +42,26 @@ The package provides default mappings for the built-in exception categories.
 | `UnprocessableException` | 422 |
 | `InternalException` | 500 |
 
----
-
 # Custom HTTP Status Code Mapping
-
-Mappings can be customized during registration.
 
 ```csharp
 builder.Services.AddCrStatusCodeMapping(builder =>
 {
     builder.AddDefaultMappings();
 
-    builder.Map<MyCustomException>(499);
+    builder.Map<MyCustomException>(StatusCodes.Status499ClientClosedRequest);
 });
 ```
 
 ---
 
-# Custom Log Level Mapping
+# Default Log Level Mapping
 
-Log levels can also be customized independently.
+| Exception | Log Level |
+|-----------|------------:|
+| `InternalException` | Error |
+
+# Custom Log Level Mapping
 
 ```csharp
 builder.Services.AddCrLogLevelMapping(builder =>
