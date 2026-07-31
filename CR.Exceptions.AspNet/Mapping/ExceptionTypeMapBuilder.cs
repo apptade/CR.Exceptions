@@ -8,6 +8,8 @@ public abstract class ExceptionTypeMapBuilder<TValue>
 
     public ExceptionTypeMapBuilder<TValue> Map<TException>(TValue value) where TException : CrException
     {
+        ThrowIfInvalidValue(value);
+
         if (!_map.TryAdd(typeof(TException), value))
         {
             throw new InvalidOperationException(
@@ -17,8 +19,7 @@ public abstract class ExceptionTypeMapBuilder<TValue>
         return this;
     }
 
-    protected FrozenDictionary<Type, TValue> BuildMap()
-    {
-        return _map.ToFrozenDictionary();
-    }
+    protected FrozenDictionary<Type, TValue> BuildMap() => _map.ToFrozenDictionary();
+
+    protected abstract void ThrowIfInvalidValue(TValue value);
 }
