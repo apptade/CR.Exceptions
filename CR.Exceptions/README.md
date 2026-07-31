@@ -1,4 +1,4 @@
-# CrCore.Exceptions
+# Intro
 
 A lightweight library for defining application errors, creating typed exceptions, and mapping external error codes into domain-specific exceptions.
 
@@ -28,9 +28,7 @@ dotnet add package CrCore.Exceptions
 Every application error is represented by `CrError`.
 
 ```csharp
-var error = new CrError(
-    "Identity.UserNotFound",
-    "User was not found.");
+var error = new CrError("IdentityUserNotFound", "User was not found.");
 ```
 
 Each error contains:
@@ -54,18 +52,16 @@ Available categories:
 | `NotFoundException` | Resource not found |
 | `ConflictException` | Resource conflict |
 | `UnprocessableException` | Business rule violation |
+| `InternalException` | Internal server error |
 
 Example:
 
 ```csharp
 public sealed class UserNotFoundException : NotFoundException
 {
-    public UserNotFoundException(Guid userId)
-        : base(
-            [new CrError(
-                "Identity.UserNotFound",
-                $"User '{userId}' was not found.")],
-            "User was not found.")
+    public UserNotFoundException(Guid userId) : base(
+        [new CrError("IdentityUserNotFound", $"User '{userId}' was not found.")],
+        "User was not found.")
     {
     }
 }
@@ -95,11 +91,7 @@ Those codes can be mapped into application errors.
 ErrorMap errorMap = builder
     .Add(new ErrorRegistration(
         "user_not_found",
-        [
-            new CrError(
-                "Identity.UserNotFound",
-                "User was not found.")
-        ]))
+        [new CrError("IdentityUserNotFound", "User was not found.")]))
     .Build();
 ```
 
@@ -127,11 +119,7 @@ ExceptionFactory factory = builder
     .Add(new ExceptionRegistration(
         new ErrorRegistration(
             "invalid_grant",
-            [
-                new CrError(
-                    "Identity.InvalidCredentials",
-                    "Invalid username or password.")
-            ]),
+            [new CrError("IdentityInvalidCredentials", "Invalid username or password.")]),
         errors => new InvalidCredentialsException(errors)))
     .Build();
 ```
@@ -143,13 +131,3 @@ throw factory.Create("invalid_grant");
 ```
 
 The factory only creates exceptions for registered error codes.
-
----
-
-# ASP.NET Core Integration
-
-HTTP exception handling and RFC 7807 / ProblemDetails support are provided by the separate package:
-
-**CrCore.Exceptions.AspNet**
-
-See its README for configuration and ASP.NET Core integration.

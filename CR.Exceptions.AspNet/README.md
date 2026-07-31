@@ -1,4 +1,4 @@
-# CrCore.Exceptions.AspNet
+# Intro
 
 ASP.NET Core integration for **CrCore.Exceptions**.
 
@@ -42,7 +42,7 @@ The package provides default mappings for the built-in exception categories.
 | `NotFoundException` | 404 |
 | `ConflictException` | 409 |
 | `UnprocessableException` | 422 |
-| `CrException` | 500 |
+| `InternalException` | 500 |
 
 ---
 
@@ -110,11 +110,3 @@ Example:
   "traceId": "..."
 }
 ```
-
----
-
-# Dependency
-
-This package depends on **CrCore.Exceptions** and is intended to be used in ASP.NET Core applications.
-
-For defining application errors, exception categories, `ErrorMap`, and `ExceptionFactory`, see the **CrCore.Exceptions** package.
