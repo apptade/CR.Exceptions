@@ -6,10 +6,11 @@ namespace CR.Exceptions.AspNet.Mapping;
 public abstract class ExceptionTypeMap<TValue>
 {
     private readonly FrozenDictionary<Type, TValue> _map;
+    public IReadOnlyDictionary<Type, TValue> Map => _map;
 
     protected ExceptionTypeMap(FrozenDictionary<Type, TValue> map)
     {
-        _map = map;
+        _map = map ?? throw new ArgumentNullException(nameof(map));
     }
 
     public bool TryFind(CrException exception, [MaybeNullWhen(false)] out TValue value)
