@@ -6,7 +6,7 @@ public static class LogLevelMapBuilderExtensions
 {
     extension(LogLevelMapBuilder builder)
     {
-        public LogLevelMapBuilder AddDefaultMapping()
+        public LogLevelMapBuilder AddDefaultMappings()
         {
             builder
                 .Map<InternalException>(LogLevel.Error);

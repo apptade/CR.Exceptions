@@ -16,7 +16,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
     private readonly ILogger<CrExceptionHandler> _logger;
 
     private readonly StatusCodeMap _statusCodeMap;
-    private readonly LogLevelMap _logLevelMap; 
+    private readonly LogLevelMap _logLevelMap;
 
     public CrExceptionHandler(
         IProblemDetailsService problemDetailsService,

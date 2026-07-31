@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
         }
 
         public IServiceCollection AddCrStatusCodeMapping()
-            => AddCrStatusCodeMapping(services, static builder => builder.AddDefaultMapping());
+            => AddCrStatusCodeMapping(services, static builder => builder.AddDefaultMappings());
 
         public IServiceCollection AddCrStatusCodeMapping(Action<StatusCodeMapBuilder> configurator)
         {
@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
         }
 
         public IServiceCollection AddCrLogLevelMapping()
-            => AddCrLogLevelMapping(services, static builder => builder.AddDefaultMapping());
+            => AddCrLogLevelMapping(services, static builder => builder.AddDefaultMappings());
 
         public IServiceCollection AddCrLogLevelMapping(Action<LogLevelMapBuilder> configurator)
         {
