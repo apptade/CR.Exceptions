@@ -13,7 +13,7 @@ public static partial class CrExceptionHandlerLogExtensions
         public const int UnhandledException = BaseId + 3;
         public const int ProblemDetailsExtensionOverwritten = BaseId + 4;
         public const int FailedToWriteProblemDetails = BaseId + 5;
-        public const int ApplicationExceptionGenerated = BaseId + 6;
+        public const int ApplicationException = BaseId + 6;
     }
 
     [LoggerMessage(
@@ -46,17 +46,8 @@ public static partial class CrExceptionHandlerLogExtensions
         Message = "Failed to write ProblemDetails response.")]
     public static partial void LogFailedToWriteProblemDetails(this ILogger logger, Exception exception);
 
-    public static void LogApplicationException(this ILogger logger, LogLevel logLevel, Exception exception, string? exceptionType)
-    {
-        if (logLevel == LogLevel.None)
-            return;
-
-        var targetLevel = Enum.IsDefined(logLevel) ? logLevel : LogLevel.Debug;
-        logger.LogApplicationExceptionGenerated(targetLevel, exception, exceptionType);
-    }
-
     [LoggerMessage(
-        EventId = LogIds.ApplicationExceptionGenerated,
+        EventId = LogIds.ApplicationException,
         Message = "Application exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogApplicationExceptionGenerated(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
+    public static partial void LogApplicationException(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
 }
