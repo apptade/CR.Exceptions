@@ -12,17 +12,12 @@ public sealed partial class CrExceptionHandler
     [LoggerMessage(
         Level = LogLevel.Warning,
         Message = "No HTTP status code mapping found for exception type '{ExceptionType}'. Using 500 Internal Server Error.")]
-    private static partial void LogMissingHttpStatusMapping(ILogger logger, Exception exception, string exceptionType);
-
-    [LoggerMessage(
-        Level = LogLevel.Debug,
-        Message = "Application exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogApplicationException(ILogger logger, Exception exception, string exceptionType);
+    private static partial void LogMissingHttpStatusMapping(ILogger logger, Exception exception, string? exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "An unexpected exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogUnhandledException(ILogger logger, Exception exception, string exceptionType);
+    private static partial void LogUnhandledException(ILogger logger, Exception exception, string? exceptionType);
 
     [LoggerMessage(
         Level = LogLevel.Warning,
@@ -33,4 +28,17 @@ public sealed partial class CrExceptionHandler
         Level = LogLevel.Error,
         Message = "Failed to write ProblemDetails response.")]
     private static partial void LogFailedToWriteProblemDetails(ILogger logger, Exception exception);
+
+    private static void LogApplicationException(ILogger logger, LogLevel logLevel, Exception exception, string? exceptionType)
+    {
+        if (logLevel == LogLevel.None)
+            return;
+
+        var targetLevel = Enum.IsDefined(logLevel) ? logLevel : LogLevel.Debug;
+        LogApplicationExceptionGenerated(logger, targetLevel, exception, exceptionType);
+    }
+
+    [LoggerMessage(
+        Message = "Application exception of type '{ExceptionType}' occurred.")]
+    private static partial void LogApplicationExceptionGenerated(ILogger logger, LogLevel level, Exception exception, string? exceptionType);
 }
