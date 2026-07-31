@@ -14,7 +14,8 @@ public static class ExceptionStatusCodeOptionsExtensions
                 .Map<ForbiddenException>(StatusCodes.Status403Forbidden)
                 .Map<NotFoundException>(StatusCodes.Status404NotFound)
                 .Map<ConflictException>(StatusCodes.Status409Conflict)
-                .Map<UnprocessableException>(StatusCodes.Status422UnprocessableEntity);
+                .Map<UnprocessableException>(StatusCodes.Status422UnprocessableEntity)
+                .Map<InternalException>(StatusCodes.Status500InternalServerError);
         }
     }
 }
