@@ -2,13 +2,14 @@
 
 ASP.NET Core integration for **CrCore.Exceptions**.
 
-This package converts `CrException` instances into RFC 7807 `ProblemDetails` responses and provides configurable exception-to-HTTP status code mapping.
+This package provides automatic handling of `CrException` instances, converts them into RFC 7807 `ProblemDetails` responses, and supports configurable exception-to-HTTP status code and log level mappings.
 
 ## Features
 
 - ASP.NET Core exception handler
 - RFC 7807 `ProblemDetails` responses
 - Configurable exception → HTTP status code mapping
+- Configurable exception → log level mapping
 - Automatic serialization of `CrException`
 - Generic handling of unexpected exceptions
 
@@ -20,17 +21,28 @@ This package converts `CrException` instances into RFC 7807 `ProblemDetails` res
 dotnet add package CrCore.Exceptions.AspNet
 ```
 
-Register the exception handler during application startup.
+Register the default exception handling during application startup.
 
 ```csharp
-builder.Services.AddCrExceptionHandler();
+builder.Services.AddCrExceptions();
+
+app.UseExceptionHandler();
+```
+
+If you need more control, individual components can be registered separately.
+
+```csharp
+builder.Services
+    .AddCrExceptionHandler()
+    .AddCrStatusCodeMapping()
+    .AddCrLogLevelMapping();
 
 app.UseExceptionHandler();
 ```
 
 ---
 
-# Default Status Code Mapping
+# Default HTTP Status Code Mapping
 
 The package provides default mappings for the built-in exception categories.
 
@@ -46,16 +58,31 @@ The package provides default mappings for the built-in exception categories.
 
 ---
 
-# Custom Status Code Mapping
+# Custom HTTP Status Code Mapping
 
 Mappings can be customized during registration.
 
 ```csharp
-builder.Services.AddCrExceptionHandler(options =>
+builder.Services.AddCrStatusCodeMapping(builder =>
 {
-    options.StatusCodes.AddDefaultMappings();
+    builder.AddDefaultMappings();
 
-    options.StatusCodes.Map<MyCustomException>(499);
+    builder.Map<MyCustomException>(499);
+});
+```
+
+---
+
+# Custom Log Level Mapping
+
+Log levels can also be customized independently.
+
+```csharp
+builder.Services.AddCrLogLevelMapping(builder =>
+{
+    builder.AddDefaultMappings();
+
+    builder.Map<MyCustomException>(LogLevel.Warning);
 });
 ```
 
