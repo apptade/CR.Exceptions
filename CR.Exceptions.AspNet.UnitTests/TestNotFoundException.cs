@@ -1,8 +1,8 @@
-﻿namespace CR.Exceptions.AspNet.UnitTests;
+﻿namespace CR.Exceptions.AspNet.Tests;
 
 internal sealed class TestNotFoundException : NotFoundException
 {
-    public TestNotFoundException() : base([new("TestNotFound", "Test Entity not found")])
+    public TestNotFoundException() : base([new("TestNotFound", "Test entity not found error message")])
     {
     }
 }
