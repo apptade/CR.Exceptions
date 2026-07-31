@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 
 namespace CR.Exceptions.AspNet;
 
-public sealed partial class CrExceptionHandler : IExceptionHandler
+public sealed class CrExceptionHandler : IExceptionHandler
 {
     private static readonly ImmutableArray<CrError> DefaultInternalErrors =
         [new("InternalError", "An unexpected internal error occurred.")];
@@ -35,7 +35,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
     {
         if (httpContext.Response.HasStarted)
         {
-            LogResponseAlreadyStarted(_logger, exception);
+            _logger.LogResponseAlreadyStarted(exception);
             return false;
         }
 
@@ -57,15 +57,15 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
             }
             else
             {
-                LogMissingHttpStatusMapping(_logger, exception, exceptionTypeName);
+                _logger.LogMissingHttpStatusMapping(exception, exceptionTypeName);
             }
 
             var logLevel = _logLevelMap.TryFind(crException, out var level) ? level : LogLevel.Debug;
-            LogApplicationException(_logger, logLevel, exception, exceptionTypeName);
+            _logger.LogApplicationException(logLevel, exception, exceptionTypeName);
         }
         else
         {
-            LogUnhandledException(_logger, exception, exceptionTypeName);
+            _logger.LogUnhandledException(exception, exceptionTypeName);
         }
 
         httpContext.Response.StatusCode = statusCode;
@@ -83,14 +83,7 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         };
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
-        var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
-
-        if (!isWritten)
-        {
-            LogFailedToWriteProblemDetails(_logger, exception);
-        }
-
-        return isWritten;
+        return await TryWriteResponseAsync(exception, problemDetailsContext);
     }
 
     private void AddProblemDetailsExtension(ProblemDetails problemDetails, string key, object? value)
@@ -98,7 +91,19 @@ public sealed partial class CrExceptionHandler : IExceptionHandler
         if (!problemDetails.Extensions.TryAdd(key, value))
         {
             problemDetails.Extensions[key] = value;
-            LogProblemDetailsExtensionOverwritten(_logger, key);
+            _logger.LogProblemDetailsExtensionOverwritten(key);
         }
+    }
+
+    private async Task<bool> TryWriteResponseAsync(Exception exception, ProblemDetailsContext problemDetailsContext)
+    {
+        var isWritten = await _problemDetailsService.TryWriteAsync(problemDetailsContext);
+
+        if (!isWritten)
+        {
+            _logger.LogFailedToWriteProblemDetails(exception);
+        }
+
+        return isWritten;
     }
 }
