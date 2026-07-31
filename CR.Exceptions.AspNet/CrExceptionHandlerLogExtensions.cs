@@ -52,11 +52,11 @@ public static partial class CrExceptionHandlerLogExtensions
             return;
 
         var targetLevel = Enum.IsDefined(logLevel) ? logLevel : LogLevel.Debug;
-        LogApplicationExceptionGenerated(logger, targetLevel, exception, exceptionType);
+        logger.LogApplicationExceptionGenerated(targetLevel, exception, exceptionType);
     }
 
     [LoggerMessage(
         EventId = LogIds.ApplicationExceptionGenerated,
         Message = "Application exception of type '{ExceptionType}' occurred.")]
-    private static partial void LogApplicationExceptionGenerated(ILogger logger, LogLevel level, Exception exception, string? exceptionType);
+    private static partial void LogApplicationExceptionGenerated(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
 }
