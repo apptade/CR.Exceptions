@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddCrExceptionDefaultHandling()
+        public IServiceCollection AddCrExceptions()
         {
             return services
                 .AddCrExceptionHandler()
@@ -23,9 +23,7 @@ public static class ServiceCollectionExtensions
         }
 
         public IServiceCollection AddCrStatusCodeMapping()
-        {
-            return AddCrStatusCodeMapping(services, configurator => configurator.AddDefaultMappings());
-        }
+            => AddCrStatusCodeMapping(services, static builder => builder.AddDefaultMapping());
 
         public IServiceCollection AddCrStatusCodeMapping(Action<StatusCodeMapBuilder> configurator)
         {
@@ -38,9 +36,7 @@ public static class ServiceCollectionExtensions
         }
 
         public IServiceCollection AddCrLogLevelMapping()
-        {
-            return AddCrLogLevelMapping(services, configurator => configurator.AddDefaultMappings());
-        }
+            => AddCrLogLevelMapping(services, static builder => builder.AddDefaultMapping());
 
         public IServiceCollection AddCrLogLevelMapping(Action<LogLevelMapBuilder> configurator)
         {
@@ -54,9 +50,9 @@ public static class ServiceCollectionExtensions
 
         private IServiceCollection AddCustomProblemDetails()
         {
-            return services.AddProblemDetails(options =>
+            return services.AddProblemDetails(static options =>
             {
-                options.CustomizeProblemDetails = context =>
+                options.CustomizeProblemDetails = static context =>
                 {
                     var currentActivity = System.Diagnostics.Activity.Current;
 

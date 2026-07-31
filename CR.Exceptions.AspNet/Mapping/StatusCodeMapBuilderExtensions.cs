@@ -6,7 +6,7 @@ public static class StatusCodeMapBuilderExtensions
 {
     extension(StatusCodeMapBuilder builder)
     {
-        public StatusCodeMapBuilder AddDefaultMappings()
+        public StatusCodeMapBuilder AddDefaultMapping()
         {
             builder
                 .Map<ValidationException>(StatusCodes.Status400BadRequest)
