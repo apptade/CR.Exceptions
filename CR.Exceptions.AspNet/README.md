@@ -60,6 +60,7 @@ builder.Services.AddCrStatusCodeMapping(builder =>
 | Exception | Log Level |
 |-----------|------------:|
 | `InternalException` | Error |
+| `OtherUnregistered` | Debug |
 
 # Custom Log Level Mapping
 
