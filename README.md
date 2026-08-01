@@ -2,8 +2,6 @@
 
 A lightweight framework for defining application errors, creating typed exceptions, and exposing consistent error responses across application boundaries.
 
-The repository contains the following modules:
-
 ## Modules
 
 ### CR.Exceptions

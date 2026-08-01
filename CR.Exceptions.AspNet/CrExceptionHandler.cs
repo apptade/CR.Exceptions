@@ -60,12 +60,17 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 _logger.LogMissingHttpStatusMapping(exception, exceptionTypeName);
             }
 
-            var logLevel = _logLevelMap.TryFind(crException, out var level) ? level : LogLevel.Debug;
-            _logger.LogApplicationException(logLevel, exception, exceptionTypeName);
+            if (!_logLevelMap.TryFind(crException, out var logLevel))
+            {
+                logLevel = LogLevel.Debug;
+                _logger.LogMissingLogLevelMapping(exceptionTypeName, logLevel);
+            }
+
+            _logger.LogCrExceptionOccurred(logLevel, exception, exceptionTypeName);
         }
         else
         {
-            _logger.LogUnhandledException(exception, exceptionTypeName);
+            _logger.LogUnknownException(exception, exceptionTypeName);
         }
 
         httpContext.Response.StatusCode = statusCode;
@@ -81,6 +86,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 Instance = httpContext.Request.Path
             },
         };
+
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         return await TryWriteResponseAsync(exception, problemDetailsContext);

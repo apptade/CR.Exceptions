@@ -10,7 +10,7 @@
     <Description>Core .NET exception framework providing base error models, an exception factory, and error mapping.</Description>
     
     <PackageId>$(NuGetPackagePrefix).Exceptions</PackageId>
-    <PackageTags>exceptions;exception-handling;error-handling;error-factory;error-mapping;domain-exceptions</PackageTags>
+    <PackageTags>exceptions;exception-handling;exception-factory;error-handling;error-factory;error-mapping;</PackageTags>
     
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
