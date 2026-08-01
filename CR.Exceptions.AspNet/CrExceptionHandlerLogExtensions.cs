@@ -2,7 +2,7 @@
 
 namespace CR.Exceptions.AspNet;
 
-public static partial class CrExceptionHandlerLogExtensions
+internal static partial class CrExceptionHandlerLogExtensions
 {
     private static class LogIds
     {
@@ -54,7 +54,7 @@ public static partial class CrExceptionHandlerLogExtensions
 
     [LoggerMessage(
         EventId = LogIds.MissingLogLevelMapping,
-        Level = LogLevel.Information,
+        Level = LogLevel.Debug,
         Message = "No log level mapping found for exception type '{ExceptionType}'. Using fallback log level '{FallbackLogLevel}'.")]
     public static partial void LogMissingLogLevelMapping(this ILogger logger, string? exceptionType, LogLevel fallbackLogLevel);
 }
