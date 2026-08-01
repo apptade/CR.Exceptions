@@ -86,6 +86,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 Instance = httpContext.Request.Path
             },
         };
+
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
 
         return await TryWriteResponseAsync(exception, problemDetailsContext);
