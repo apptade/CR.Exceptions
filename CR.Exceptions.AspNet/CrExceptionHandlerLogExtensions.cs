@@ -10,10 +10,10 @@ public static partial class CrExceptionHandlerLogExtensions
 
         public const int ResponseAlreadyStarted = BaseId + 1;
         public const int MissingHttpStatusMapping = BaseId + 2;
-        public const int UnhandledException = BaseId + 3;
+        public const int UnknownException = BaseId + 3;
         public const int ProblemDetailsExtensionOverwritten = BaseId + 4;
         public const int FailedToWriteProblemDetails = BaseId + 5;
-        public const int ApplicationException = BaseId + 6;
+        public const int CrExceptionOccurred = BaseId + 6;
         public const int MissingLogLevelMapping = BaseId + 7;
     }
 
@@ -30,10 +30,10 @@ public static partial class CrExceptionHandlerLogExtensions
     public static partial void LogMissingHttpStatusMapping(this ILogger logger, Exception exception, string? exceptionType);
 
     [LoggerMessage(
-        EventId = LogIds.UnhandledException,
+        EventId = LogIds.UnknownException,
         Level = LogLevel.Error,
-        Message = "An unexpected exception of type '{ExceptionType}' occurred.")]
-    public static partial void LogUnhandledException(this ILogger logger, Exception exception, string? exceptionType);
+        Message = "Unknown exception of type '{ExceptionType}' occurred. Default internal errors will be used.")]
+    public static partial void LogUnknownException(this ILogger logger, Exception exception, string? exceptionType);
 
     [LoggerMessage(
         EventId = LogIds.ProblemDetailsExtensionOverwritten,
@@ -48,9 +48,9 @@ public static partial class CrExceptionHandlerLogExtensions
     public static partial void LogFailedToWriteProblemDetails(this ILogger logger, Exception exception);
 
     [LoggerMessage(
-        EventId = LogIds.ApplicationException,
-        Message = "Application exception of type '{ExceptionType}' occurred.")]
-    public static partial void LogApplicationException(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
+        EventId = LogIds.CrExceptionOccurred,
+        Message = "CR exception of type '{ExceptionType}' occurred.")]
+    public static partial void LogCrExceptionOccurred(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
 
     [LoggerMessage(
         EventId = LogIds.MissingLogLevelMapping,

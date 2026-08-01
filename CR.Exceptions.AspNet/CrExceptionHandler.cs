@@ -66,11 +66,11 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 _logger.LogMissingLogLevelMapping(exceptionTypeName, logLevel);
             }
 
-            _logger.LogApplicationException(logLevel, exception, exceptionTypeName);
+            _logger.LogCrExceptionOccurred(logLevel, exception, exceptionTypeName);
         }
         else
         {
-            _logger.LogUnhandledException(exception, exceptionTypeName);
+            _logger.LogUnknownException(exception, exceptionTypeName);
         }
 
         httpContext.Response.StatusCode = statusCode;
