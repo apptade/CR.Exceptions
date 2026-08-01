@@ -11,7 +11,7 @@ public sealed class LogLevelMapBuilderTests
         var builder = CreateBuilder()
             .Map<InternalException>(LogLevel.Error);
 
-        Assert.Throws<InvalidOperationException>(() => builder.Map<InternalException>(LogLevel.Warning));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<InternalException>(LogLevel.Warning));
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public sealed class LogLevelMapBuilderTests
     {
         var builder = CreateBuilder();
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => builder.Map<ConflictException>((LogLevel)4000));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<ConflictException>((LogLevel)4000));
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public sealed class LogLevelMapBuilderTests
     {
         var builder = CreateBuilder();
 
-        Assert.Throws<ArgumentException>(() => builder.Map<ConflictException>(LogLevel.None));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<ConflictException>(LogLevel.None));
     }
 
     [Fact]

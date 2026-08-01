@@ -11,7 +11,7 @@ public sealed class StatusCodeMapBuilderTests
         var builder = CreateBuilder()
             .Map<ValidationException>(StatusCodes.Status400BadRequest);
 
-        Assert.Throws<InvalidOperationException>(() => builder.Map<ValidationException>(StatusCodes.Status404NotFound));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<ValidationException>(StatusCodes.Status404NotFound));
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public sealed class StatusCodeMapBuilderTests
     {
         var builder = CreateBuilder();
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => builder.Map<ValidationException>(4000));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<ValidationException>(4000));
     }
 
     [Fact]

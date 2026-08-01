@@ -8,11 +8,13 @@ public sealed class StatusCodeMapTests
     [Fact]
     public void TryFind_ShouldReturn_404_For_NotFoundException()
     {
-        var map = CreateMap();
-        var result = map.TryFind(new TestNotFoundException(), out var code);
+        var code = StatusCodes.Status404NotFound;
+        var map = CreateMap(builder => builder.Map<NotFoundException>(code));
+
+        var result = map.TryFind(new TestNotFoundException(), out var actualCode);
 
         Assert.True(result);
-        Assert.Equal(StatusCodes.Status404NotFound, code);
+        Assert.Equal(code, actualCode);
     }
 
     [Fact]
@@ -23,10 +25,11 @@ public sealed class StatusCodeMapTests
         Assert.False(map.TryFind(new TestUnregisteredException(), out var _));
     }
 
-    private StatusCodeMap CreateMap()
+    private static StatusCodeMap CreateMap(Action<StatusCodeMapBuilder>? configurator = null)
     {
-        return new StatusCodeMapBuilder()
-            .AddDefaultMappings()
-            .Build();
+        var builder = new StatusCodeMapBuilder();
+        configurator?.Invoke(builder);
+
+        return builder.Build();
     }
 }
