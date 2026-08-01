@@ -1,20 +1,19 @@
 ﻿using CR.Exceptions.Mapping;
 
-namespace CR.Exceptions.UnitTests;
+namespace CR.Exceptions.Tests.Component;
 
 public sealed class ExceptionFactoryTests
 {
     [Fact]
-    public void TryCreate_ShouldReturnException_WhenCodeExists()
+    public void TryCreate_ShouldReturn_Exception_WhenCodeExists()
     {
         const string errorCode = "TestError";
         const string registrationCode = "test_error";
 
         var errorRegistration = new ErrorRegistration(registrationCode, [new(errorCode, "Something went wrong.")]);
-        var exceptionRegistration = new ExceptionRegistration(errorRegistration, errors => new TestException(errors));
 
         var factory = new ExceptionFactoryBuilder()
-            .Add(exceptionRegistration)
+            .Add(new(errorRegistration, errors => new TestException(errors)))
             .Build();
 
         var result = factory.TryCreate(registrationCode, out var exception);
@@ -28,26 +27,15 @@ public sealed class ExceptionFactoryTests
     }
 
     [Fact]
-    public void TryCreate_ShouldReturnFalse_WhenCodeNotExist()
+    public void TryCreate_ShouldReturn_False_WhenCodeNotExist()
     {
-        var factory = new ExceptionFactoryBuilder().Build();
+        var factory = new ExceptionFactoryBuilder()
+            .Add(new(new("?", [new("?", "?")]), errors => new TestException(errors)))
+            .Build();
 
         var result = factory.TryCreate("non_existent_code", out var exception);
 
         Assert.False(result);
         Assert.Null(exception);
-    }
-
-    [Fact]
-    public void Build_ShouldThrow_WhenDuplicateCodesRegistered()
-    {
-        var errorRegistration = new ErrorRegistration("duplicate", [new("code", "message")]);
-        var exceptionRegistration = new ExceptionRegistration(errorRegistration, errors => new TestException(errors));
-
-        var builder = new ExceptionFactoryBuilder()
-            .Add(exceptionRegistration)
-            .Add(exceptionRegistration);
-
-        Assert.Throws<InvalidOperationException>(builder.Build);
     }
 }

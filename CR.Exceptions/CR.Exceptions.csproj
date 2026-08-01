@@ -7,8 +7,16 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Common exception abstractions and error models for .NET applications.</Description>
+    <Description>Core .NET exception framework providing base error models, an exception factory, and error mapping.</Description>
+    
     <PackageId>$(NuGetPackagePrefix).Exceptions</PackageId>
+    <PackageTags>exceptions;exception-handling;error-handling;error-factory;error-mapping;domain-exceptions</PackageTags>
+    
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

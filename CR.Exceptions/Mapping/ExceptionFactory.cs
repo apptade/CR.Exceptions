@@ -3,36 +3,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CR.Exceptions.Mapping;
 
-public sealed class ExceptionFactory
+public sealed class ExceptionFactory : Map<string, ExceptionRegistration>
 {
-    private readonly FrozenDictionary<string, ExceptionRegistration> _map;
-
-    internal ExceptionFactory(FrozenDictionary<string, ExceptionRegistration> map)
-    {
-        _map = map;
-    }
+    internal ExceptionFactory(FrozenDictionary<string, ExceptionRegistration> dictionary) : base(dictionary) { }
 
     public CrException Create(string code)
-    {
-        if (TryCreate(code, out var exception))
-        {
-            return exception;
-        }
-
-        throw new KeyNotFoundException($"Exception factory with code '{code}' is not found.");
-    }
+        => TransformValueToResult(GetValue(code));
 
     public bool TryCreate(string code, [MaybeNullWhen(false)] out CrException exception)
+        => (exception = TryGetValue(code, out var value) ? TransformValueToResult(value) : null) != null;
+
+    private static CrException TransformValueToResult(ExceptionRegistration value)
     {
-        if (_map.TryGetValue(code, out var registration))
-        {
-            exception = registration.Factory(registration.Definition.Errors)
-                ?? throw new NullReferenceException("The registered factory return null exception");
-
-            return true;
-        }
-
-        exception = default;
-        return false;
+        return value.Factory(value.Definition.Errors)
+            ?? throw new NullReferenceException("The registered factory return null exception");
     }
 }

@@ -2,8 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
   </Folder>
-  <Project Path="CR.Exceptions.AspNet.UnitTests/CR.Exceptions.AspNet.UnitTests.csproj" Id="98992ed2-cb1e-4e88-9e6a-faada37aeaa6" />
+  <Project Path="CR.Exceptions.AspNet.UnitTests/CR.Exceptions.AspNet.Tests.csproj" Id="98992ed2-cb1e-4e88-9e6a-faada37aeaa6" />
   <Project Path="CR.Exceptions.AspNet/CR.Exceptions.AspNet.csproj" Id="2749300d-4ad8-4e25-b49f-75847b8c0cbd" />
-  <Project Path="CR.Exceptions.UnitTests/CR.Exceptions.UnitTests.csproj" Id="7b9ef70f-7663-4220-80fe-b00434912875" />
+  <Project Path="CR.Exceptions.UnitTests/CR.Exceptions.Tests.csproj" Id="7b9ef70f-7663-4220-80fe-b00434912875" />
   <Project Path="CR.Exceptions/CR.Exceptions.csproj" />
 </Solution>

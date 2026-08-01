@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace CR.Exceptions.AspNet.UnitTests;
+namespace CR.Exceptions.AspNet.Tests.Component;
 
 public sealed class CrExceptionHandlerTests
 {
@@ -31,7 +31,7 @@ public sealed class CrExceptionHandlerTests
     public Task Should_Return_500_For_UnhandledException()
     {
         return AssertHandlerResult(
-            new Exception("Unknown exception"),
+            new InvalidOperationException(),
             StatusCodes.Status500InternalServerError,
             canCreateActivity: true);
     }
@@ -40,7 +40,7 @@ public sealed class CrExceptionHandlerTests
     public Task Should_Return_500_For_UnhandledException_When_Activity_Is_Missing()
     {
         return AssertHandlerResult(
-            new Exception("Unknown exception"),
+            new InvalidOperationException(),
             StatusCodes.Status500InternalServerError,
             canCreateActivity: false);
     }
@@ -57,25 +57,48 @@ public sealed class CrExceptionHandlerTests
         using var responseStream = new MemoryStream();
         var context = CreateContext(responseStream);
 
-        var isHandled = await handler.TryHandleAsync(context, exception, CancellationToken.None);
-
-        Assert.True(isHandled);
-        Assert.Equal(expectedStatusCode, context.Response.StatusCode);
-        Assert.Contains("application/problem+json", context.Response.ContentType);
+        Assert.True(await handler.TryHandleAsync(context, exception, CancellationToken.None));
+        AssertHttpContext(context, expectedStatusCode);
 
         responseStream.Position = 0;
 
-        var problem = await JsonSerializer.DeserializeAsync<CustomProblemDetails>(responseStream, JsonSerializerOptions.Web);
+        var problem = await JsonSerializer.DeserializeAsync<TestProblemDetails>(responseStream, JsonSerializerOptions.Web);
         var expectedTraceId = activity?.TraceId.ToHexString() ?? context.TraceIdentifier;
 
         AssertProblemDetails(problem, context, expectedStatusCode, expectedTraceId);
+
+        _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
+    }
+
+    private static void AssertHttpContext(HttpContext context, int expectedStatusCode)
+    {
+        Assert.Equal(expectedStatusCode, context.Response.StatusCode);
+        Assert.Contains("application/problem+json", context.Response.ContentType);
+    }
+
+    private static void AssertProblemDetails(TestProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
+    {
+        Assert.NotNull(problem);
+
+        Assert.False(string.IsNullOrEmpty(problem.Type));
+        Assert.False(string.IsNullOrEmpty(problem.Title));
+        Assert.False(string.IsNullOrEmpty(problem.Detail));
+
+        Assert.Equal(expectedStatusCode, problem.Status);
+        Assert.Equal(context.Request.Path, problem.Instance);
+
+        Assert.True(problem.Extensions.TryGetValue(ProblemDetailsExtensionNames.TraceId, out var traceId));
+        Assert.Equal(expectedTraceId, traceId!.ToString());
+
+        Assert.NotNull(problem.Errors);
+        Assert.NotEmpty(problem.Errors);
     }
 
     private static ServiceProvider CreateServiceProvider()
     {
         return new ServiceCollection()
             .AddLogging()
-            .AddCrExceptionHandler()
+            .AddCrExceptions()
             .BuildServiceProvider();
     }
 
@@ -88,30 +111,7 @@ public sealed class CrExceptionHandlerTests
         };
     }
 
-    private void AssertProblemDetails(CustomProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
-    {
-        Assert.NotNull(problem);
-
-        _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
-
-        Assert.False(string.IsNullOrEmpty(problem.Type));
-        Assert.False(string.IsNullOrEmpty(problem.Title));
-        Assert.False(string.IsNullOrEmpty(problem.Detail));
-
-        Assert.Equal(expectedStatusCode, problem.Status);
-        Assert.Equal(context.Request.Path, problem.Instance);
-
-        Assert.True(problem.Extensions.TryGetValue(
-                ProblemDetailsExtensionNames.TraceId,
-                out var traceId));
-
-        Assert.Equal(expectedTraceId, traceId?.ToString());
-
-        Assert.NotNull(problem.Errors);
-        Assert.NotEmpty(problem.Errors);
-    }
-
-    private sealed class CustomProblemDetails : ProblemDetails
+    private sealed class TestProblemDetails : ProblemDetails
     {
         public CrError[]? Errors { get; set; }
     }

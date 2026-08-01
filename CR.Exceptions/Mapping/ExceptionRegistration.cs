@@ -2,7 +2,7 @@
 
 namespace CR.Exceptions.Mapping;
 
-public sealed record class ExceptionRegistration
+public record class ExceptionRegistration
 {
     public ErrorRegistration Definition { get; init; }
     public Func<ImmutableArray<CrError>, CrException> Factory { get; init; }
