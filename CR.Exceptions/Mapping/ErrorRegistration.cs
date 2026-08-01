@@ -10,7 +10,7 @@ public record class ErrorRegistration
 
     public ErrorRegistration(string code, ImmutableArray<CrError> errors)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrEmpty(code);
         errors.ThrowIfEmptyOrContainsNull();
 
         Code = code;

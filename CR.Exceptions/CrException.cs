@@ -9,7 +9,7 @@ public abstract class CrException : Exception
 
     protected CrException(ImmutableArray<CrError> errors, string message, Exception? innerException = null) : base(message, innerException)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        ArgumentException.ThrowIfNullOrEmpty(message);
         errors.ThrowIfEmptyOrContainsNull();
 
         Errors = errors;
