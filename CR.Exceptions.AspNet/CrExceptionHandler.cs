@@ -60,7 +60,12 @@ public sealed class CrExceptionHandler : IExceptionHandler
                 _logger.LogMissingHttpStatusMapping(exception, exceptionTypeName);
             }
 
-            var logLevel = _logLevelMap.TryFind(crException, out var level) ? level : LogLevel.Debug;
+            if (!_logLevelMap.TryFind(crException, out var logLevel))
+            {
+                logLevel = LogLevel.Debug;
+                _logger.LogMissingLogLevelMapping(exceptionTypeName, logLevel);
+            }
+
             _logger.LogApplicationException(logLevel, exception, exceptionTypeName);
         }
         else

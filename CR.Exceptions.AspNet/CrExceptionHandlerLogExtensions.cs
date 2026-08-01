@@ -14,6 +14,7 @@ public static partial class CrExceptionHandlerLogExtensions
         public const int ProblemDetailsExtensionOverwritten = BaseId + 4;
         public const int FailedToWriteProblemDetails = BaseId + 5;
         public const int ApplicationException = BaseId + 6;
+        public const int MissingLogLevelMapping = BaseId + 7;
     }
 
     [LoggerMessage(
@@ -50,4 +51,10 @@ public static partial class CrExceptionHandlerLogExtensions
         EventId = LogIds.ApplicationException,
         Message = "Application exception of type '{ExceptionType}' occurred.")]
     public static partial void LogApplicationException(this ILogger logger, LogLevel level, Exception exception, string? exceptionType);
+
+    [LoggerMessage(
+        EventId = LogIds.MissingLogLevelMapping,
+        Level = LogLevel.Information,
+        Message = "No log level mapping found for exception type '{ExceptionType}'. Using fallback log level '{FallbackLogLevel}'.")]
+    public static partial void LogMissingLogLevelMapping(this ILogger logger, string? exceptionType, LogLevel fallbackLogLevel);
 }
