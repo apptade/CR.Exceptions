@@ -1,14 +1,10 @@
-﻿using System.Collections.Frozen;
+﻿namespace CR.Exceptions.Mapping;
 
-namespace CR.Exceptions.Mapping;
-
-public sealed class ErrorMapBuilder
+public sealed class ErrorMapBuilder : MapBuilder<string, ErrorRegistration>
 {
-    private readonly MappingSource<string, ErrorRegistration> _source = new();
-
     public ErrorMapBuilder Add(ErrorRegistration registration)
     {
-        _source.Add(registration.Code, registration);
+        Add(registration.Code, registration);
         return this;
     }
 
@@ -20,6 +16,6 @@ public sealed class ErrorMapBuilder
 
     public ErrorMap Build()
     {
-        return new(_source.Map.ToFrozenDictionary(comparer: StringComparer.Ordinal));
+        return new(BuildFrozenDictionary(comparer: StringComparer.Ordinal));
     }
 }

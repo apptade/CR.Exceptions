@@ -1,12 +1,12 @@
-﻿namespace CR.Exceptions.Mapping;
+﻿using System.Collections.Frozen;
 
-public sealed class MappingSource<TKey, TValue> where TValue : class where TKey : notnull
+namespace CR.Exceptions.Mapping;
+
+public abstract class MapBuilder<TKey, TValue> where TKey : notnull
 {
     private readonly Dictionary<TKey, TValue> _map = [];
 
-    public IReadOnlyDictionary<TKey, TValue> Map => _map;
-
-    public void Add(TKey key, TValue value)
+    protected void Add(TKey key, TValue value)
     {
         ArgumentNullException.ThrowIfNull(key);
         ArgumentNullException.ThrowIfNull(value);
@@ -17,4 +17,7 @@ public sealed class MappingSource<TKey, TValue> where TValue : class where TKey 
                 $"The key '{key}' of type '{key.GetType().FullName}' has already been added.", nameof(key));
         }
     }
+
+    protected FrozenDictionary<TKey, TValue> BuildFrozenDictionary(IEqualityComparer<TKey>? comparer = null)
+        => _map.ToFrozenDictionary(comparer);
 }

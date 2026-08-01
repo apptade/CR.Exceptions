@@ -3,9 +3,9 @@ using System.Collections.Frozen;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class LogLevelMap : ExceptionTypeMap<LogLevel>
+public sealed class LogLevelMap : TypeMap<LogLevel>
 {
-    internal LogLevelMap(FrozenDictionary<Type, LogLevel> map) : base(map)
+    internal LogLevelMap(FrozenDictionary<Type, LogLevel> dictionary) : base(dictionary)
     {
     }
 }

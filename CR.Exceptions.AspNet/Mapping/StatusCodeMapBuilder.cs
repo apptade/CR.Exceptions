@@ -2,11 +2,11 @@
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class StatusCodeMapBuilder : ExceptionTypeMapBuilder<int>
+public sealed class StatusCodeMapBuilder : TypeMapBuilder<int>
 {
     public StatusCodeMap Build()
     {
-        return new(BuildMap());
+        return new(BuildFrozenDictionary());
     }
 
     protected override void ThrowIfInvalidValue(int value)

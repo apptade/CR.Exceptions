@@ -1,14 +1,10 @@
-﻿using System.Collections.Frozen;
+﻿namespace CR.Exceptions.Mapping;
 
-namespace CR.Exceptions.Mapping;
-
-public sealed class ExceptionFactoryBuilder
+public sealed class ExceptionFactoryBuilder : MapBuilder<string, ExceptionRegistration>
 {
-    private readonly MappingSource<string, ExceptionRegistration> _source = new();
-
     public ExceptionFactoryBuilder Add(ExceptionRegistration registration)
     {
-        _source.Add(registration.Definition.Code, registration);
+        Add(registration.Definition.Code, registration);
         return this;
     }
 
@@ -20,6 +16,6 @@ public sealed class ExceptionFactoryBuilder
 
     public ExceptionFactory Build()
     {
-        return new(_source.Map.ToFrozenDictionary(comparer: StringComparer.Ordinal));
+        return new(BuildFrozenDictionary(comparer: StringComparer.Ordinal));
     }
 }

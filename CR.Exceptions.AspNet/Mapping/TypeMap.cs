@@ -1,17 +1,12 @@
-﻿using System.Collections.Frozen;
+﻿using CR.Exceptions.Mapping;
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public abstract class ExceptionTypeMap<TValue>
+public abstract class TypeMap<TValue> : Map<Type, TValue>
 {
-    private readonly FrozenDictionary<Type, TValue> _map;
-    public IReadOnlyDictionary<Type, TValue> Map => _map;
-
-    protected ExceptionTypeMap(FrozenDictionary<Type, TValue> map)
-    {
-        _map = map ?? throw new ArgumentNullException(nameof(map));
-    }
+    protected TypeMap(FrozenDictionary<Type, TValue> dictionary) : base(dictionary) { }
 
     public bool TryFind(CrException exception, [MaybeNullWhen(false)] out TValue value)
     {
@@ -19,7 +14,7 @@ public abstract class ExceptionTypeMap<TValue>
 
         for (var type = exception.GetType(); type is not null; type = type.BaseType)
         {
-            if (_map.TryGetValue(type, out value))
+            if (TryGetValue(type, out value))
             {
                 return true;
             }

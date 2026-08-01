@@ -2,11 +2,11 @@
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class LogLevelMapBuilder : ExceptionTypeMapBuilder<LogLevel>
+public sealed class LogLevelMapBuilder : TypeMapBuilder<LogLevel>
 {
     public LogLevelMap Build()
     {
-        return new(BuildMap());
+        return new(BuildFrozenDictionary());
     }
 
     protected override void ThrowIfInvalidValue(LogLevel value)

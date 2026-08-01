@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace CR.Exceptions.Mapping;
 
-public sealed record class ErrorRegistration
+public record class ErrorRegistration
 {
     public string Code { get; init; }
     public ImmutableArray<CrError> Errors { get; init; }

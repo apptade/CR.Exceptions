@@ -2,9 +2,9 @@
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class StatusCodeMap : ExceptionTypeMap<int>
+public sealed class StatusCodeMap : TypeMap<int>
 {
-    internal StatusCodeMap(FrozenDictionary<Type, int> map) : base(map)
+    internal StatusCodeMap(FrozenDictionary<Type, int> dictionary) : base(dictionary)
     {
     }
 }

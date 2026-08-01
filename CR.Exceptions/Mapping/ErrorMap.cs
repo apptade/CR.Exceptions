@@ -3,30 +3,18 @@ using System.Collections.Immutable;
 
 namespace CR.Exceptions.Mapping;
 
-public sealed class ErrorMap
+public sealed class ErrorMap : Map<string, ErrorRegistration>
 {
-    private readonly FrozenDictionary<string, ErrorRegistration> _map;
-
-    internal ErrorMap(FrozenDictionary<string, ErrorRegistration> map)
-    {
-        _map = map;
-    }
+    internal ErrorMap(FrozenDictionary<string, ErrorRegistration> dictionary) : base(dictionary) { }
 
     public ImmutableArray<CrError> Get(string code)
-    {
-        if (TryGet(code, out var errors))
-        {
-            return errors;
-        }
-
-        throw new KeyNotFoundException($"Collection with code '{code}' is not found.");
-    }
+        => GetValue(code).Errors;
 
     public bool TryGet(string code, out ImmutableArray<CrError> errors)
     {
-        if (_map.TryGetValue(code, out var descriptor))
+        if (TryGetValue(code, out var value))
         {
-            errors = descriptor.Errors;
+            errors = value.Errors;
             return true;
         }
 
