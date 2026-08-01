@@ -1,28 +1,25 @@
-﻿using CR.Exceptions.Extensions;
+﻿using System.Collections.Frozen;
 
 namespace CR.Exceptions.Mapping;
 
 public sealed class ErrorMapBuilder
 {
-    private readonly RegistrationCollection<ErrorRegistration> _collection = new();
+    private readonly MappingSource<string, ErrorRegistration> _source = new();
 
     public ErrorMapBuilder Add(ErrorRegistration registration)
     {
-        _collection.Add(registration);
+        _source.Add(registration.Code, registration);
         return this;
     }
 
     public ErrorMapBuilder AddRange(IEnumerable<ErrorRegistration> registrations)
     {
-        _collection.AddRange(registrations);
+        foreach (var registration in registrations) Add(registration);
         return this;
     }
 
     public ErrorMap Build()
     {
-        return new(_collection.Items.ToUniqueFrozenDictionary(
-            keySelector: k => k.Code,
-            elementSelector: v => v,
-            comparer: StringComparer.Ordinal));
+        return new(_source.Map.ToFrozenDictionary(comparer: StringComparer.Ordinal));
     }
 }

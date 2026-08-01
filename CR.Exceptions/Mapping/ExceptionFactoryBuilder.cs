@@ -1,28 +1,25 @@
-﻿using CR.Exceptions.Extensions;
+﻿using System.Collections.Frozen;
 
 namespace CR.Exceptions.Mapping;
 
 public sealed class ExceptionFactoryBuilder
 {
-    private readonly RegistrationCollection<ExceptionRegistration> _collection = new();
+    private readonly MappingSource<string, ExceptionRegistration> _source = new();
 
     public ExceptionFactoryBuilder Add(ExceptionRegistration registration)
     {
-        _collection.Add(registration);
+        _source.Add(registration.Definition.Code, registration);
         return this;
     }
 
     public ExceptionFactoryBuilder AddRange(IEnumerable<ExceptionRegistration> registrations)
     {
-        _collection.AddRange(registrations);
+        foreach (var registration in registrations) Add(registration);
         return this;
     }
 
     public ExceptionFactory Build()
     {
-        return new(_collection.Items.ToUniqueFrozenDictionary(
-            keySelector: k => k.Definition.Code,
-            elementSelector: v => v,
-            comparer: StringComparer.Ordinal));
+        return new(_source.Map.ToFrozenDictionary(comparer: StringComparer.Ordinal));
     }
 }
