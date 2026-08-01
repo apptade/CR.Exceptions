@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace CR.Exceptions.UnitTests;
+namespace CR.Exceptions.Tests;
 
 internal sealed class TestException : CrException
 {
