@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using CR.Exceptions.Mapping;
+using System.Net;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class StatusCodeMapBuilder : TypeMapBuilder<int>
+public class StatusCodeMapBuilder : TypeMapBuilder<int>
 {
     public StatusCodeMap Build()
     {

@@ -1,18 +1,18 @@
-﻿using CR.Exceptions.Mapping;
-using System.Collections.Frozen;
+﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.Mapping;
 
 public abstract class TypeMap<TValue> : Map<Type, TValue>
 {
     protected TypeMap(FrozenDictionary<Type, TValue> dictionary) : base(dictionary) { }
 
-    public bool TryFind(CrException exception, [MaybeNullWhen(false)] out TValue value)
-    {
-        ArgumentNullException.ThrowIfNull(exception);
+    protected TValue Find(Type? type)
+        => TryFind(type, out var value) ? value : throw CreateKeyNotFoundException(type!);
 
-        for (var type = exception.GetType(); type is not null; type = type.BaseType)
+    protected bool TryFind(Type? type, [MaybeNullWhen(false)] out TValue value)
+    {
+        for (; type is not null; type = type.BaseType)
         {
             if (TryGetValue(type, out value))
             {

@@ -4,9 +4,20 @@ namespace CR.Exceptions.Mapping;
 
 public abstract class MapBuilder<TKey, TValue> where TKey : notnull
 {
-    private readonly Dictionary<TKey, TValue> _map = [];
+    private readonly Dictionary<TKey, TValue> _map;
 
-    protected void Add(TKey key, TValue value)
+    protected MapBuilder()
+    {
+        _map = [];
+    }
+
+    protected MapBuilder(int startCapacity)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(startCapacity);
+        _map = new(capacity: startCapacity);
+    }
+
+    protected void AddPair(TKey key, TValue value)
     {
         ArgumentNullException.ThrowIfNull(key);
         ArgumentNullException.ThrowIfNull(value);

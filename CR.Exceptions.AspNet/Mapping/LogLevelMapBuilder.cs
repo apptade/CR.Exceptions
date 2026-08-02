@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CR.Exceptions.Mapping;
+using Microsoft.Extensions.Logging;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class LogLevelMapBuilder : TypeMapBuilder<LogLevel>
+public class LogLevelMapBuilder : TypeMapBuilder<LogLevel>
 {
     public LogLevelMap Build()
     {

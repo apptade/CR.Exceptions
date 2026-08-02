@@ -1,10 +1,9 @@
-﻿using System.Collections.Frozen;
+﻿using CR.Exceptions.Mapping;
+using System.Collections.Frozen;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class StatusCodeMap : TypeMap<int>
+public class StatusCodeMap : TypeMap<int>
 {
-    internal StatusCodeMap(FrozenDictionary<Type, int> dictionary) : base(dictionary)
-    {
-    }
+    internal StatusCodeMap(FrozenDictionary<Type, int> dictionary) : base(dictionary) { }
 }

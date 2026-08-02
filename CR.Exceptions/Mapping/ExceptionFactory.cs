@@ -3,19 +3,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CR.Exceptions.Mapping;
 
-public sealed class ExceptionFactory : Map<string, ExceptionRegistration>
+public class ExceptionFactory : Map<string, Func<CrException>>
 {
-    internal ExceptionFactory(FrozenDictionary<string, ExceptionRegistration> dictionary) : base(dictionary) { }
+    internal ExceptionFactory(FrozenDictionary<string, Func<CrException>> dictionary) : base(dictionary) { }
 
     public CrException Create(string code)
-        => TransformValueToResult(GetValue(code));
+        => FactoryToException(GetValue(code));
 
     public bool TryCreate(string code, [MaybeNullWhen(false)] out CrException exception)
-        => (exception = TryGetValue(code, out var value) ? TransformValueToResult(value) : null) != null;
+        => (exception = TryGetValue(code, out var value) ? FactoryToException(value) : null) != null;
 
-    private static CrException TransformValueToResult(ExceptionRegistration value)
+    private static CrException FactoryToException(Func<CrException> factory)
     {
-        return value.Factory(value.Definition.Errors)
-            ?? throw new NullReferenceException("The registered factory return null exception");
+        return factory() ?? throw new NullReferenceException($"The registered {nameof(factory)} - return null exception");
     }
 }

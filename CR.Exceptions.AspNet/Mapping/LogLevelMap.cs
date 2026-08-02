@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CR.Exceptions.Mapping;
+using Microsoft.Extensions.Logging;
 using System.Collections.Frozen;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class LogLevelMap : TypeMap<LogLevel>
+public class LogLevelMap : TypeMap<LogLevel>
 {
-    internal LogLevelMap(FrozenDictionary<Type, LogLevel> dictionary) : base(dictionary)
-    {
-    }
+    internal LogLevelMap(FrozenDictionary<Type, LogLevel> dictionary) : base(dictionary) { }
 }
