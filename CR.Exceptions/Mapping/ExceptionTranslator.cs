@@ -8,10 +8,10 @@ public class ExceptionTranslator : TypeMap<Func<CrException>>
     internal ExceptionTranslator(FrozenDictionary<Type, Func<CrException>> dictionary) : base(dictionary) { }
 
     public CrException Translate(CrException exception)
-        => TranslatorToException(Find(exception.GetType()));
+        => TranslatorToException(FindValue(exception.GetType()));
 
     public bool TryTranslate(CrException exception, [MaybeNullWhen(false)] out CrException translated)
-        => (translated = TryFind(exception.GetType(), out var factory) ? TranslatorToException(factory) : null) != null;
+        => (translated = TryFindValue(exception.GetType(), out var factory) ? TranslatorToException(factory) : null) != null;
 
     private static CrException TranslatorToException(Func<CrException> translator)
     {

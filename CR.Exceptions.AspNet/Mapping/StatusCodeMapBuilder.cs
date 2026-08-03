@@ -3,19 +3,25 @@ using System.Net;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public class StatusCodeMapBuilder : TypeMapBuilder<int>
+public class StatusCodeMapBuilder : MapBuilder<Type, int>
 {
-    public StatusCodeMap Build()
+    public StatusCodeMapBuilder Map<TException>(int code) where TException : CrException
     {
-        return new(BuildFrozenDictionary());
+        ThrowIfInvalidCode(code);
+        AddPair(typeof(TException), code);
+
+        return this;
     }
 
-    protected override void ThrowIfInvalidValue(int value)
+    public StatusCodeMap Build()
+        => new(BuildFrozenDictionary());
+
+    private static void ThrowIfInvalidCode(int code)
     {
-        if (!Enum.IsDefined(typeof(HttpStatusCode), value))
+        if (!Enum.IsDefined(typeof(HttpStatusCode), code))
         {
             throw new ArgumentOutOfRangeException(
-                nameof(value), $"'{value}' is not a standard HTTP status code.");
+                nameof(code), $"'{code}' is not a standard HTTP status code.");
         }
     }
 }

@@ -11,12 +11,6 @@ public abstract class MapBuilder<TKey, TValue> where TKey : notnull
         _map = [];
     }
 
-    protected MapBuilder(int startCapacity)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(startCapacity);
-        _map = new(capacity: startCapacity);
-    }
-
     protected void AddPair(TKey key, TValue value)
     {
         ArgumentNullException.ThrowIfNull(key);
