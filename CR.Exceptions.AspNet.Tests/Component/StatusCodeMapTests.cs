@@ -11,7 +11,7 @@ public sealed class StatusCodeMapTests
     private static readonly TestUnknownException NonExistentException = new();
 
     [Fact]
-    public void TryFind_ShouldReturn_TrueAndStatusCode_WhenExceptionExists()
+    public void TryFind_ShouldReturn_TrueAndCode_WhenExceptionExists()
     {
         var map = GetDefaultMap();
         var result = map.TryFind(ExistentException, out var actualCode);
@@ -24,9 +24,10 @@ public sealed class StatusCodeMapTests
     public void TryFind_ShouldReturn_FalseAndDefault_WhenExceptionDoesNotExist()
     {
         var map = GetDefaultMap();
-        var result = map.TryFind(NonExistentException, out var _);
+        var result = map.TryFind(NonExistentException, out var code);
 
         Assert.False(result);
+        Assert.Equal(default, code);
     }
 
     private static StatusCodeMap GetDefaultMap()

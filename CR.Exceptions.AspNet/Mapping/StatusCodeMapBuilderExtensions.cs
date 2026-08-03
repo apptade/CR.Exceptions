@@ -8,7 +8,7 @@ public static class StatusCodeMapBuilderExtensions
     {
         public StatusCodeMapBuilder AddDefaultMappings()
         {
-            builder
+            return builder
                 .Map<ValidationException>(StatusCodes.Status400BadRequest)
                 .Map<UnauthorizedException>(StatusCodes.Status401Unauthorized)
                 .Map<ForbiddenException>(StatusCodes.Status403Forbidden)
@@ -16,8 +16,6 @@ public static class StatusCodeMapBuilderExtensions
                 .Map<ConflictException>(StatusCodes.Status409Conflict)
                 .Map<UnprocessableException>(StatusCodes.Status422UnprocessableEntity)
                 .Map<InternalException>(StatusCodes.Status500InternalServerError);
-
-            return builder;
         }
     }
 }

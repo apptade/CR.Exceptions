@@ -8,7 +8,7 @@ public static class LogLevelMapBuilderExtensions
     {
         public LogLevelMapBuilder AddDefaultMappings()
         {
-            builder
+            return builder
                 .Map<ValidationException>(LogLevel.Debug)
                 .Map<UnauthorizedException>(LogLevel.Debug)
                 .Map<ForbiddenException>(LogLevel.Debug)
@@ -16,8 +16,6 @@ public static class LogLevelMapBuilderExtensions
                 .Map<ConflictException>(LogLevel.Debug)
                 .Map<UnprocessableException>(LogLevel.Debug)
                 .Map<InternalException>(LogLevel.Error);
-
-            return builder;
         }
     }
 }

@@ -11,7 +11,7 @@ public sealed class LogLevelMapTests
     private static readonly TestUnknownException NonExistentException = new();
 
     [Fact]
-    public void TryFind_ShouldReturn_TrueAndLogLevel_WhenExceptionExists()
+    public void TryFind_ShouldReturn_TrueAndLevel_WhenExceptionExists()
     {
         var map = GetDefaultMap();
         var result = map.TryFind(ExistentException, out var actualLevel);
@@ -24,9 +24,10 @@ public sealed class LogLevelMapTests
     public void TryFind_ShouldReturn_FalseAndDefault_WhenExceptionDoesNotExist()
     {
         var map = GetDefaultMap();
-        var result = map.TryFind(NonExistentException, out var _);
+        var result = map.TryFind(NonExistentException, out var level);
 
         Assert.False(result);
+        Assert.Equal(default, level);
     }
 
     private static LogLevelMap GetDefaultMap()

@@ -15,7 +15,7 @@ public class LogLevelMapBuilder : MapBuilder<Type, LogLevel>
 
     public LogLevelMap Build()
         => new(BuildFrozenDictionary());
-    
+
     private static void ThrowIfInvalidLevel(LogLevel level)
     {
         if (!Enum.IsDefined(level))

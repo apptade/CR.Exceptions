@@ -9,8 +9,8 @@ namespace CR.Exceptions.AspNet;
 
 public sealed class CrExceptionHandler : IExceptionHandler
 {
-    private static readonly ImmutableArray<CrError> DefaultInternalErrors =
-        [new("InternalError", "An unexpected internal error occurred.")];
+    private static readonly ImmutableArray<CrError> DefaultInternalErrors
+        = [new("InternalError", "An unexpected internal error occurred.")];
 
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly ILogger<CrExceptionHandler> _logger;
