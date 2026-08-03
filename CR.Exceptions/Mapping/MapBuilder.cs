@@ -4,12 +4,7 @@ namespace CR.Exceptions.Mapping;
 
 public abstract class MapBuilder<TKey, TValue> where TKey : notnull
 {
-    private readonly Dictionary<TKey, TValue> _map;
-
-    protected MapBuilder()
-    {
-        _map = [];
-    }
+    private readonly Dictionary<TKey, TValue> _map = [];
 
     protected void AddPair(TKey key, TValue value)
     {
