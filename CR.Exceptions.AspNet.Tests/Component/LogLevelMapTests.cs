@@ -1,5 +1,5 @@
 ﻿using CR.Exceptions.AspNet.Mapping;
-using CR.Exceptions.Tests;
+using CR.Exceptions.Tests.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace CR.Exceptions.AspNet.Tests.Component;

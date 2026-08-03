@@ -1,4 +1,4 @@
-﻿using CR.Exceptions.Tests;
+﻿using CR.Exceptions.Tests.Shared;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

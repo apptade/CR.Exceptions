@@ -1,4 +1,5 @@
 ﻿using CR.Exceptions.Mapping;
+using CR.Exceptions.Tests.Shared;
 
 namespace CR.Exceptions.Tests.Component;
 
