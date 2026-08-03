@@ -5,14 +5,13 @@ namespace CR.Exceptions.Tests.Unit;
 public sealed class ExceptionFactoryBuilderTests
 {
     [Fact]
-    public void Add_ShouldThrow_WhenDuplicateRegistered()
+    public void Map_ShouldThrow_WhenDuplicateRegistered()
     {
-        var errorRegistration = new ErrorRegistration("duplicate", [new("code", "message")]);
-        var exceptionRegistration = new ExceptionRegistration(errorRegistration, errors => new TestException(errors));
+        const string code = "duplicate";
 
         var builder = new ExceptionFactoryBuilder()
-            .Add(exceptionRegistration);
+            .Map(code, () => new TestUnknownException());
 
-        Assert.ThrowsAny<ArgumentException>(() => builder.Add(exceptionRegistration));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map(code, () => new TestUnknownException()));
     }
 }

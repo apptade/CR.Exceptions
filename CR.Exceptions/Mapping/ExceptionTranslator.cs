@@ -10,8 +10,8 @@ public class ExceptionTranslator : TypeMap<Func<CrException>>
     public CrException Translate(CrException exception)
         => TranslatorToException(Find(exception.GetType()));
 
-    public bool TryTranslate(CrException exception, [MaybeNullWhen(false)] out CrException value)
-        => (value = TryFind(exception.GetType(), out var factory) ? TranslatorToException(factory) : null) != null;
+    public bool TryTranslate(CrException exception, [MaybeNullWhen(false)] out CrException translated)
+        => (translated = TryFind(exception.GetType(), out var factory) ? TranslatorToException(factory) : null) != null;
 
     private static CrException TranslatorToException(Func<CrException> translator)
     {
