@@ -23,7 +23,7 @@ dotnet add package CrCore.Exceptions.AspNet
 Register the default exception handling during application startup.
 
 ```csharp
-builder.Services.AddCrExceptions();
+builder.Services.AddCrExceptionsCore();
 
 app.UseExceptionHandler();
 ```
@@ -59,8 +59,13 @@ builder.Services.AddCrStatusCodeMapping(builder =>
 
 | Exception | Log Level |
 |-----------|------------:|
+| `ValidationException` | Debug |
+| `UnauthorizedException` | Debug |
+| `ForbiddenException` | Debug |
+| `NotFoundException` | Debug |
+| `ConflictException` | Debug |
+| `UnprocessableException` | Debug |
 | `InternalException` | Error |
-| `OtherUnregistered` | Debug |
 
 # Custom Log Level Mapping
 
@@ -83,18 +88,18 @@ Example:
 
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "The requested resource was not found.",
-  "instance": "/api/users/1",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+  "title": "An error occurred while processing your request.",
+  "status": 500,
+  "detail": "An unexpected internal error occurred.",
+  "instance": "/api/test",
   "errors": [
     {
-      "code": "Identity.UserNotFound",
-      "message": "User was not found."
+      "code": "TestInternalCode",
+      "message": "TestInternalMessage"
     }
   ],
-  "traceId": "..."
+  "traceId": "1ca274bed877413cefd8094fc63bd559"
 }
 ```
 
@@ -114,13 +119,13 @@ Example:
   "title": "An error occurred while processing your request.",
   "status": 500,
   "detail": "An unexpected error occurred.",
-  "instance": "/api/users/1",
+  "instance": "/api/test",
   "errors": [
     {
       "code": "InternalError",
       "message": "An unexpected internal error occurred."
     }
   ],
-  "traceId": "..."
+  "traceId": "b217277ea131750f161bc6e8d8b33302"
 }
 ```

@@ -1,26 +1,33 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CR.Exceptions.Mapping;
+using Microsoft.Extensions.Logging;
 
 namespace CR.Exceptions.AspNet.Mapping;
 
-public sealed class LogLevelMapBuilder : TypeMapBuilder<LogLevel>
+public class LogLevelMapBuilder : MapBuilder<Type, LogLevel>
 {
-    public LogLevelMap Build()
+    public LogLevelMapBuilder Map<TException>(LogLevel level) where TException : CrException
     {
-        return new(BuildFrozenDictionary());
+        ThrowIfInvalidLevel(level);
+        AddPair(typeof(TException), level);
+
+        return this;
     }
 
-    protected override void ThrowIfInvalidValue(LogLevel value)
+    public LogLevelMap Build()
+        => new(BuildFrozenDictionary());
+
+    private static void ThrowIfInvalidLevel(LogLevel level)
     {
-        if (!Enum.IsDefined(value))
+        if (!Enum.IsDefined(level))
         {
             throw new ArgumentOutOfRangeException(
-                nameof(value), value, $"The value '{value}' is not a valid {nameof(LogLevel)}.");
+                nameof(level), level, $"The value '{level}' is not a valid {nameof(LogLevel)}.");
         }
 
-        if (value == LogLevel.None)
+        if (level is LogLevel.None)
         {
             throw new ArgumentException(
-                $"{nameof(LogLevel)}.{nameof(LogLevel.None)} cannot be used for exception mapping.", nameof(value));
+                $"{nameof(LogLevel)}.{nameof(LogLevel.None)} cannot be used for exception mapping.", nameof(level));
         }
     }
 }

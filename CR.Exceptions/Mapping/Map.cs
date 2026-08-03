@@ -15,8 +15,11 @@ public abstract class Map<TKey, TValue> where TKey : notnull
     }
 
     protected TValue GetValue(TKey key)
-        => TryGetValue(key, out var value) ? value : throw new KeyNotFoundException($"Key '{key}' in map is not found.");
+        => TryGetValue(key, out var value) ? value : throw CreateKeyNotFoundException(key);
 
     protected bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         => _dictionary.TryGetValue(key, out value);
+
+    protected KeyNotFoundException CreateKeyNotFoundException(TKey key)
+        => new($"Key '{key?.ToString() ?? "null"}' in map is not found.");
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using CR.Exceptions.Tests.Shared;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +20,11 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public Task Should_Return_404_For_NotFoundException()
+    public Task Should_Return_500_For_InternalException()
     {
         return AssertHandlerResult(
-            new TestNotFoundException(),
-            StatusCodes.Status404NotFound,
+            new TestInternalException(),
+            StatusCodes.Status500InternalServerError,
             canCreateActivity: true);
     }
 
@@ -37,7 +38,7 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public Task Should_Return_500_For_UnhandledException_When_Activity_Is_Missing()
+    public Task Should_Return_500_For_UnhandledException_When_ActivityIsMissing()
     {
         return AssertHandlerResult(
             new InvalidOperationException(),
@@ -98,7 +99,7 @@ public sealed class CrExceptionHandlerTests
     {
         return new ServiceCollection()
             .AddLogging()
-            .AddCrExceptions()
+            .AddCrExceptionsCore()
             .BuildServiceProvider();
     }
 

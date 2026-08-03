@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CR.Exceptions\CR.Exceptions.csproj" />
+    <ProjectReference Include="..\CR.Exceptions.Tests.Shared\CR.Exceptions.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

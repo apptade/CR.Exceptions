@@ -1,35 +1,39 @@
 ﻿using CR.Exceptions.AspNet.Mapping;
+using CR.Exceptions.Tests.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace CR.Exceptions.AspNet.Tests.Component;
 
 public sealed class LogLevelMapTests
 {
-    [Fact]
-    public void TryFind_ShouldReturn_Level_For_NotFoundException()
-    {
-        var level = LogLevel.Warning;
-        var map = CreateMap(builder => builder.Map<NotFoundException>(level));
+    private const LogLevel ExpectedLogLevel = LogLevel.Warning;
+    private static readonly TestInternalException ExistentException = new();
+    private static readonly TestUnknownException NonExistentException = new();
 
-        var result = map.TryFind(new TestNotFoundException(), out var actualLevel);
+    [Fact]
+    public void TryFind_ShouldReturn_TrueAndLevel_WhenExceptionExists()
+    {
+        var map = GetDefaultMap();
+        var result = map.TryFind(ExistentException, out var actualLevel);
 
         Assert.True(result);
-        Assert.Equal(level, actualLevel);
+        Assert.Equal(ExpectedLogLevel, actualLevel);
     }
 
     [Fact]
-    public void TryFind_ShouldReturn_False_For_UnregisteredException()
+    public void TryFind_ShouldReturn_FalseAndDefault_WhenExceptionDoesNotExist()
     {
-        var map = CreateMap();
+        var map = GetDefaultMap();
+        var result = map.TryFind(NonExistentException, out var level);
 
-        Assert.False(map.TryFind(new TestUnregisteredException(), out var _));
+        Assert.False(result);
+        Assert.Equal(default, level);
     }
 
-    private static LogLevelMap CreateMap(Action<LogLevelMapBuilder>? configurator = null)
+    private static LogLevelMap GetDefaultMap()
     {
-        var builder = new LogLevelMapBuilder();
-        configurator?.Invoke(builder);
-
-        return builder.Build();
+        return new LogLevelMapBuilder()
+            .Map<TestInternalException>(ExpectedLogLevel)
+            .Build();
     }
 }

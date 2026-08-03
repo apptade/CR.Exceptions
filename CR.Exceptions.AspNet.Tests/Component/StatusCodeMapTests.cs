@@ -1,35 +1,39 @@
 ﻿using CR.Exceptions.AspNet.Mapping;
+using CR.Exceptions.Tests.Shared;
 using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet.Tests.Component;
 
 public sealed class StatusCodeMapTests
 {
-    [Fact]
-    public void TryFind_ShouldReturn_404_For_NotFoundException()
-    {
-        var code = StatusCodes.Status404NotFound;
-        var map = CreateMap(builder => builder.Map<NotFoundException>(code));
+    private const int ExpectedStatusCode = StatusCodes.Status500InternalServerError;
+    private static readonly TestInternalException ExistentException = new();
+    private static readonly TestUnknownException NonExistentException = new();
 
-        var result = map.TryFind(new TestNotFoundException(), out var actualCode);
+    [Fact]
+    public void TryFind_ShouldReturn_TrueAndCode_WhenExceptionExists()
+    {
+        var map = GetDefaultMap();
+        var result = map.TryFind(ExistentException, out var actualCode);
 
         Assert.True(result);
-        Assert.Equal(code, actualCode);
+        Assert.Equal(ExpectedStatusCode, actualCode);
     }
 
     [Fact]
-    public void TryFind_ShouldReturn_False_For_UnregisteredException()
+    public void TryFind_ShouldReturn_FalseAndDefault_WhenExceptionDoesNotExist()
     {
-        var map = CreateMap();
+        var map = GetDefaultMap();
+        var result = map.TryFind(NonExistentException, out var code);
 
-        Assert.False(map.TryFind(new TestUnregisteredException(), out var _));
+        Assert.False(result);
+        Assert.Equal(default, code);
     }
 
-    private static StatusCodeMap CreateMap(Action<StatusCodeMapBuilder>? configurator = null)
+    private static StatusCodeMap GetDefaultMap()
     {
-        var builder = new StatusCodeMapBuilder();
-        configurator?.Invoke(builder);
-
-        return builder.Build();
+        return new StatusCodeMapBuilder()
+            .Map<TestInternalException>(ExpectedStatusCode)
+            .Build();
     }
 }

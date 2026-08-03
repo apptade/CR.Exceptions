@@ -5,7 +5,7 @@ namespace CR.Exceptions;
 public abstract class ValidationException : CrException
 {
     protected ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "One or more validation errors occurred.", innerException)
+        : base(errors, "The provided data is invalid. Check the specific errors list.", innerException)
     {
     }
 

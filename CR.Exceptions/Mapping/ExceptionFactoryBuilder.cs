@@ -1,21 +1,18 @@
 ﻿namespace CR.Exceptions.Mapping;
 
-public sealed class ExceptionFactoryBuilder : MapBuilder<string, ExceptionRegistration>
+public class ExceptionFactoryBuilder : MapBuilder<string, Func<CrException>>
 {
-    public ExceptionFactoryBuilder Add(ExceptionRegistration registration)
+    public ExceptionFactoryBuilder Map(string code, Func<CrException> factory)
     {
-        Add(registration.Definition.Code, registration);
-        return this;
-    }
+        ThrowIfInvalidCode(code);
+        AddPair(code, factory);
 
-    public ExceptionFactoryBuilder AddRange(IEnumerable<ExceptionRegistration> registrations)
-    {
-        foreach (var registration in registrations) Add(registration);
         return this;
     }
 
     public ExceptionFactory Build()
-    {
-        return new(BuildFrozenDictionary(comparer: StringComparer.Ordinal));
-    }
+        => new(BuildFrozenDictionary(comparer: StringComparer.Ordinal));
+
+    private static void ThrowIfInvalidCode(string code)
+        => ArgumentException.ThrowIfNullOrEmpty(code);
 }
