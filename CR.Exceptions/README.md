@@ -1,17 +1,17 @@
 # Intro
 
-A lightweight library for defining application errors, creating typed exceptions, and mapping external error codes into domain-specific exceptions.
+A lightweight library for defining application errors, creating typed exceptions, and translating external exceptions into domain-specific exceptions.
 
-This package contains only the core exception model and does not depend on ASP.NET Core.
+This package contains only the core exception model and has no ASP.NET Core dependencies.
 
 ## Features
 
-- Typed application exceptions
-- Standard exception categories
-- Structured application errors (`CrError`)
-- External error mapping (`ErrorMap`)
-- Exception factory (`ExceptionFactory`)
-- No ASP.NET Core dependencies
+* Typed application exceptions
+* Standard exception categories
+* Structured application errors (`CrError`)
+* Error code → exception mapping (`ExceptionFactory`)
+* Exception → exception translation (`ExceptionTranslator`)
+* No ASP.NET Core dependencies
 
 ---
 
@@ -28,13 +28,15 @@ dotnet add package CrCore.Exceptions
 Every application error is represented by `CrError`.
 
 ```csharp
-var error = new CrError("IdentityUserNotFound", "User was not found.");
+var error = new CrError(
+    "IdentityUserNotFound",
+    "User was not found.");
 ```
 
 Each error contains:
 
-- `Code` — stable identifier for clients.
-- `Message` — human-readable description.
+* `Code` — stable identifier intended for clients.
+* `Message` — human-readable error description.
 
 ---
 
@@ -44,24 +46,28 @@ Applications should inherit from one of the predefined exception categories.
 
 Available categories:
 
-| Exception | Purpose |
-|-----------|---------|
-| `ValidationException` | Validation failures |
-| `UnauthorizedException` | Authentication required |
-| `ForbiddenException` | Access denied |
-| `NotFoundException` | Resource not found |
-| `ConflictException` | Resource conflict |
+| Exception                | Purpose                 |
+| ------------------------ | ----------------------- |
+| `ValidationException`    | Validation failures     |
+| `UnauthorizedException`  | Authentication required |
+| `ForbiddenException`     | Access denied           |
+| `NotFoundException`      | Resource not found      |
+| `ConflictException`      | Resource conflict       |
 | `UnprocessableException` | Business rule violation |
-| `InternalException` | Internal server error |
+| `InternalException`      | Internal server error   |
 
 Example:
 
 ```csharp
 public sealed class UserNotFoundException : NotFoundException
 {
-    public UserNotFoundException(Guid userId) : base(
-        [new CrError("IdentityUserNotFound", $"User '{userId}' was not found.")],
-        "User was not found.")
+    public UserNotFoundException()
+        : base(
+        [
+            new CrError(
+                "IdentityUserNotFound",
+                "User was not found.")
+        ])
     {
     }
 }
@@ -70,57 +76,30 @@ public sealed class UserNotFoundException : NotFoundException
 Usage:
 
 ```csharp
-throw new UserNotFoundException(userId);
+throw new UserNotFoundException();
 ```
-
----
-
-# ErrorMap
-
-External systems usually expose their own error codes.
-
-For example:
-
-```text
-user_not_found
-```
-
-Those codes can be mapped into application errors.
-
-```csharp
-ErrorMap errorMap = builder
-    .Add(new ErrorRegistration(
-        "user_not_found",
-        [new CrError("IdentityUserNotFound", "User was not found.")]))
-    .Build();
-```
-
-Resolving an external error:
-
-```csharp
-if (errorMap.TryGet("user_not_found", out var errors))
-{
-    throw new UserNotFoundException(errors);
-}
-```
-
-This keeps external service contracts isolated from the application domain.
 
 ---
 
 # ExceptionFactory
 
-`ExceptionFactory` creates typed exceptions from registered external error codes.
+External APIs often return string error codes.
+
+For example:
+
+```text
+invalid_grant
+```
+
+`ExceptionFactory` maps those codes to typed exceptions.
 
 Registration:
 
 ```csharp
-ExceptionFactory factory = builder
-    .Add(new ExceptionRegistration(
-        new ErrorRegistration(
-            "invalid_grant",
-            [new CrError("IdentityInvalidCredentials", "Invalid username or password.")]),
-        errors => new InvalidCredentialsException(errors)))
+ExceptionFactory factory = new ExceptionFactoryBuilder()
+    .Map(
+        "invalid_grant",
+        static () => new InvalidCredentialsException())
     .Build();
 ```
 
@@ -130,4 +109,32 @@ Usage:
 throw factory.Create("invalid_grant");
 ```
 
-The factory only creates exceptions for registered error codes.
+This keeps external service contracts isolated from your application.
+
+---
+
+# ExceptionTranslator
+
+Infrastructure exceptions are often not suitable for the application layer.
+
+`ExceptionTranslator` converts one exception type into another.
+
+Registration:
+
+```csharp
+ExceptionTranslator translator = new ExceptionTranslatorBuilder()
+    .Map<KeycloakUserNotFoundException>(
+        static () => new UserNotFoundException())
+    .Build();
+```
+
+Usage:
+
+```csharp
+catch (KeycloakUserNotFoundException ex)
+{
+    throw translator.Translate(ex);
+}
+```
+
+This allows infrastructure-specific exceptions to remain inside the infrastructure layer while exposing domain-specific exceptions to the rest of the application.
