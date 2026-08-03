@@ -54,7 +54,7 @@ internal static partial class CrExceptionHandlerLogExtensions
 
     [LoggerMessage(
         EventId = LogIds.MissingLogLevelMapping,
-        Level = LogLevel.Debug,
+        Level = LogLevel.Warning,
         Message = "No log level mapping found for exception type '{ExceptionType}'. Using fallback log level '{FallbackLogLevel}'.")]
     public static partial void LogMissingLogLevelMapping(this ILogger logger, string? exceptionType, LogLevel fallbackLogLevel);
 }
