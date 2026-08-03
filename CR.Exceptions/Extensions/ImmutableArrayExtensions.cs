@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace CR.Exceptions.Extensions;
 
-public static class ImmutableArrayExtensions
+internal static class ImmutableArrayExtensions
 {
     extension<TSource>(ImmutableArray<TSource> source)
     {
