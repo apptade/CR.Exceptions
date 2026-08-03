@@ -4,13 +4,14 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Core .NET exception framework providing base error models, an exception factory, and error mapping.</Description>
+    <Description>Core library for advanced .NET error handling. Provides a unified exception set, an exception factory, and an exception translator.</Description>
     
     <PackageId>$(NuGetPackagePrefix).Exceptions</PackageId>
-    <PackageTags>exceptions;exception-handling;exception-factory;error-handling;error-factory;error-mapping;</PackageTags>
+    <PackageTags>exception;exceptions;error-handling;exception-handling;exception-factory;exception-translator;exception-mapping;domain-exceptions;architecture;helpers</PackageTags>
     
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
