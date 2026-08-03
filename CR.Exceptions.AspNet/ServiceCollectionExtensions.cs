@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddCrExceptions()
+        public IServiceCollection AddCrExceptionsCore()
         {
             return services
                 .AddCrExceptionHandler()

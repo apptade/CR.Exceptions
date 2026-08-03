@@ -99,7 +99,7 @@ public sealed class CrExceptionHandlerTests
     {
         return new ServiceCollection()
             .AddLogging()
-            .AddCrExceptions()
+            .AddCrExceptionsCore()
             .BuildServiceProvider();
     }
 
