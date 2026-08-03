@@ -9,5 +9,5 @@ public class StatusCodeMap : TypeMap<int>
     internal StatusCodeMap(FrozenDictionary<Type, int> dictionary) : base(dictionary) { }
 
     public bool TryFind(CrException exception, [MaybeNullWhen(false)] out int code)
-        => TryFindValue(exception.GetType(), out code);
+        => TrySearchValue(exception.GetType(), out code);
 }

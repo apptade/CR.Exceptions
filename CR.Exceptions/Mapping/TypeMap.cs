@@ -7,10 +7,10 @@ public abstract class TypeMap<TValue> : Map<Type, TValue>
 {
     protected TypeMap(FrozenDictionary<Type, TValue> dictionary) : base(dictionary) { }
 
-    protected TValue FindValue(Type? type)
-        => TryFindValue(type, out var value) ? value : throw CreateKeyNotFoundException(type!);
+    protected TValue SearchValue(Type? type)
+        => TrySearchValue(type, out var value) ? value : throw CreateKeyNotFoundException(type!);
 
-    protected bool TryFindValue(Type? type, [MaybeNullWhen(false)] out TValue value)
+    protected bool TrySearchValue(Type? type, [MaybeNullWhen(false)] out TValue value)
     {
         for (; type is not null; type = type.BaseType)
         {

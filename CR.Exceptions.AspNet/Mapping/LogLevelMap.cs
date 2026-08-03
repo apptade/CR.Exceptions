@@ -10,5 +10,5 @@ public class LogLevelMap : TypeMap<LogLevel>
     internal LogLevelMap(FrozenDictionary<Type, LogLevel> dictionary) : base(dictionary) { }
 
     public bool TryFind(CrException exception, [MaybeNullWhen(false)] out LogLevel level)
-        => TryFindValue(exception.GetType(), out level);
+        => TrySearchValue(exception.GetType(), out level);
 }
