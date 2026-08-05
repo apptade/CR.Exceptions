@@ -1,7 +1,7 @@
 ﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.Mapping;
+namespace CR.Exceptions;
 
 public abstract class Map<TKey, TValue> where TKey : notnull
 {
@@ -20,6 +20,6 @@ public abstract class Map<TKey, TValue> where TKey : notnull
     protected bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         => _dictionary.TryGetValue(key, out value);
 
-    protected KeyNotFoundException CreateKeyNotFoundException(TKey key)
+    protected KeyNotFoundException CreateKeyNotFoundException(TKey? key)
         => new($"Key '{key?.ToString() ?? "null"}' in map is not found.");
 }

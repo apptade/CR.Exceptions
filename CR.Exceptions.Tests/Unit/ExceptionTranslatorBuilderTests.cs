@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.Mapping;
-using CR.Exceptions.Tests.Shared;
+﻿using CR.Exceptions.Tests.Shared;
 
 namespace CR.Exceptions.Tests.Unit;
 
@@ -9,8 +8,8 @@ public sealed class ExceptionTranslatorBuilderTests
     public void Map_ShouldThrow_WhenDuplicateRegistered()
     {
         var builder = new ExceptionTranslatorBuilder()
-            .Map<TestInternalException>(() => new TestUnknownException());
+            .Map<TestInternalException>(ex => new TestUnknownException(ex));
 
-        Assert.ThrowsAny<ArgumentException>(() => builder.Map<TestInternalException>(() => new TestUnknownException()));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map<TestInternalException>(ex => new TestUnknownException(ex)));
     }
 }

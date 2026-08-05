@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.Mapping;
-using CR.Exceptions.Tests.Shared;
+﻿using CR.Exceptions.Tests.Shared;
 
 namespace CR.Exceptions.Tests.Component;
 
@@ -50,7 +49,7 @@ public sealed class ExceptionTranslatorTests
     private static ExceptionTranslator GetDefaultTranslator()
     {
         return new ExceptionTranslatorBuilder()
-            .Map<TestInternalException>(() => new TestUnknownException())
+            .Map<TestInternalException>(ex => new TestUnknownException(ex))
             .Build();
     }
 }

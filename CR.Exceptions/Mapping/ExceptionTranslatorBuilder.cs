@@ -1,8 +1,8 @@
-﻿namespace CR.Exceptions.Mapping;
+﻿namespace CR.Exceptions;
 
-public class ExceptionTranslatorBuilder : MapBuilder<Type, Func<CrException>>
+public class ExceptionTranslatorBuilder : MapBuilder<Type, Func<Exception, CrException>>
 {
-    public ExceptionTranslatorBuilder Map<TException>(Func<CrException> translator) where TException : CrException
+    public ExceptionTranslatorBuilder Map<TException>(Func<Exception, CrException> translator) where TException : Exception
     {
         AddPair(typeof(TException), translator);
         return this;

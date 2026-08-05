@@ -1,6 +1,6 @@
 ﻿using System.Collections.Frozen;
 
-namespace CR.Exceptions.Mapping;
+namespace CR.Exceptions;
 
 public abstract class MapBuilder<TKey, TValue> where TKey : notnull
 {

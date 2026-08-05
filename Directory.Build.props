@@ -1,4 +1,5 @@
 <Project>
+
   <PropertyGroup>
     <Company>apptade</Company>
     <Authors>apptade</Authors>
@@ -12,4 +13,11 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <NuGetPackagePrefix>CrCore</NuGetPackagePrefix>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
 </Project>

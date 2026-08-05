@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.AspNet.Mapping;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace CR.Exceptions.AspNet;
 

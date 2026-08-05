@@ -1,7 +1,6 @@
-﻿using CR.Exceptions.Mapping;
-using System.Net;
+﻿using System.Net;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.AspNet;
 
 public class StatusCodeMapBuilder : MapBuilder<Type, int>
 {

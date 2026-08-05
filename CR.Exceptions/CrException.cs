@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.Extensions;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace CR.Exceptions;
 
