@@ -1,5 +1,4 @@
-﻿using CR.Exceptions.AspNet.Mapping;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace CR.Exceptions.AspNet.Tests.Unit;
 
