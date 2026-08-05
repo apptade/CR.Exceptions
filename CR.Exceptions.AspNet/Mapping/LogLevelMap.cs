@@ -1,9 +1,8 @@
-﻿using CR.Exceptions.Mapping;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.AspNet;
 
 public class LogLevelMap : TypeMap<LogLevel>
 {

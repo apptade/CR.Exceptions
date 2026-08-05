@@ -1,8 +1,7 @@
-﻿using CR.Exceptions.Mapping;
-using System.Collections.Frozen;
+﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.AspNet;
 
 public class StatusCodeMap : TypeMap<int>
 {

@@ -1,8 +1,7 @@
-﻿using CR.Exceptions.Extensions;
-using System.Collections.Frozen;
+﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.Mapping;
+namespace CR.Exceptions;
 
 public class ExceptionTranslator : TypeMap<Func<CrException>>
 {

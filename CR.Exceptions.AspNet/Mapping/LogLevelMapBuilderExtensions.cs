@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.AspNet;
 
 public static class LogLevelMapBuilderExtensions
 {

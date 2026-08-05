@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace CR.Exceptions.AspNet.Mapping;
+namespace CR.Exceptions.AspNet;
 
 public static class StatusCodeMapBuilderExtensions
 {

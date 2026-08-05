@@ -1,4 +1,4 @@
-﻿namespace CR.Exceptions.Mapping;
+﻿namespace CR.Exceptions;
 
 public class ExceptionTranslatorBuilder : MapBuilder<Type, Func<CrException>>
 {

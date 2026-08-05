@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace CR.Exceptions.Extensions;
+namespace CR.Exceptions;
 
 internal static class FuncExtensions
 {

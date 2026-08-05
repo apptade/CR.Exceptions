@@ -1,7 +1,7 @@
 ﻿using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CR.Exceptions.Mapping;
+namespace CR.Exceptions;
 
 public abstract class Map<TKey, TValue> where TKey : notnull
 {
