@@ -8,8 +8,8 @@ A lightweight framework for defining application errors, creating typed exceptio
 
 Core library for defining application errors, exception categories and their creation.
 
-Documentation:
-[CR.Exceptions README](./CR.Exceptions/README.md)
+[README](./CR.Exceptions/README.md)
+[NuGet](https://www.nuget.org/packages/CrCore.Exceptions/)
 
 ---
 
@@ -17,5 +17,5 @@ Documentation:
 
 ASP.NET Core integration for handling exceptions and converting them into RFC 7807 ProblemDetails responses.
 
-Documentation:
-[CR.Exceptions.AspNet README](./CR.Exceptions.AspNet/README.md)
+[README](./CR.Exceptions.AspNet/README.md)
+[NuGet](https://www.nuget.org/packages/CrCore.Exceptions.AspNet/)
