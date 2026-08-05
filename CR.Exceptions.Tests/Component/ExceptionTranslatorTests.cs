@@ -49,7 +49,7 @@ public sealed class ExceptionTranslatorTests
     private static ExceptionTranslator GetDefaultTranslator()
     {
         return new ExceptionTranslatorBuilder()
-            .Map<TestInternalException>(ex => new TestUnknownException())
+            .Map<TestInternalException>(ex => new TestUnknownException(ex))
             .Build();
     }
 }
