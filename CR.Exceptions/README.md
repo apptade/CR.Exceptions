@@ -61,13 +61,8 @@ Example:
 ```csharp
 public sealed class UserNotFoundException : NotFoundException
 {
-    public UserNotFoundException()
-        : base(
-        [
-            new CrError(
-                "IdentityUserNotFound",
-                "User was not found.")
-        ])
+    public UserNotFoundException() 
+        : base([new CrError("IdentityUserNotFound","User was not found.")])
     {
     }
 }
@@ -124,14 +119,14 @@ Registration:
 ```csharp
 ExceptionTranslator translator = new ExceptionTranslatorBuilder()
     .Map<KeycloakUserNotFoundException>(
-        static () => new UserNotFoundException())
+        static innerException => new UserNotFoundException(innerException))
     .Build();
 ```
 
 Usage:
 
 ```csharp
-catch (KeycloakUserNotFoundException ex)
+catch (Exception ex)
 {
     throw translator.Translate(ex);
 }
