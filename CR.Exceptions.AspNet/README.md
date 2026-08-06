@@ -16,12 +16,6 @@ This package provides automatic handling of `CrException` instances, converts th
 
 # Installation
 
-```bash
-dotnet add package CrCore.Exceptions.AspNet
-```
-
-Register the default exception handling during application startup.
-
 ```csharp
 builder.Services.AddCrExceptionsCore();
 
