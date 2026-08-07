@@ -20,11 +20,11 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public Task Should_Return_500_For_InternalException()
+    public Task Should_Return_404_For_NotFoundException()
     {
         return AssertHandlerResult(
-            new TestInternalException(),
-            StatusCodes.Status500InternalServerError,
+            new TestNotFoundException(),
+            StatusCodes.Status404NotFound,
             canCreateActivity: true);
     }
 
