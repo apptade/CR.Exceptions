@@ -38,16 +38,14 @@ public sealed class CrExceptionHandler : IExceptionHandler
             return false;
         }
 
+        var errors = DefaultInternalErrors;
         var statusCode = StatusCodes.Status500InternalServerError;
+
         var exceptionType = exception.GetType();
         var exceptionTypeName = exceptionType.FullName ?? exceptionType.Name;
 
-        var errors = DefaultInternalErrors;
-        var detail = "An unexpected error occurred.";
-
         if (exception is CrException crException)
         {
-            detail = crException.Message;
             errors = crException.Errors;
 
             if (_statusCodeMap.TryFind(crException, out var code))
@@ -78,12 +76,7 @@ public sealed class CrExceptionHandler : IExceptionHandler
         {
             HttpContext = httpContext,
             Exception = exception,
-            ProblemDetails =
-            {
-                Status = statusCode,
-                Detail = detail,
-                Instance = httpContext.Request.Path
-            },
+            ProblemDetails = { Status = statusCode, },
         };
 
         AddProblemDetailsExtension(problemDetailsContext.ProblemDetails, ProblemDetailsExtensionNames.Errors, errors);
