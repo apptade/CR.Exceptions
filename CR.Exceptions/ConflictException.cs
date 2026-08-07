@@ -9,7 +9,7 @@ public abstract class ConflictException : CrException
     {
     }
 
-    protected ConflictException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected ConflictException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

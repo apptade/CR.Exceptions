@@ -9,7 +9,7 @@ public abstract class NotFoundException : CrException
     {
     }
 
-    protected NotFoundException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected NotFoundException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }
