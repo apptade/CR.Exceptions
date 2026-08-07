@@ -9,7 +9,7 @@ public abstract class ForbiddenException : CrException
     {
     }
 
-    protected ForbiddenException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected ForbiddenException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

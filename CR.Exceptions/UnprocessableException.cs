@@ -9,7 +9,7 @@ public abstract class UnprocessableException : CrException
     {
     }
 
-    protected UnprocessableException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected UnprocessableException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

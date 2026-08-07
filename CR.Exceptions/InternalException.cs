@@ -9,7 +9,7 @@ public abstract class InternalException : CrException
     {
     }
 
-    protected InternalException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected InternalException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

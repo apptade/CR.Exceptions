@@ -15,8 +15,6 @@ public class ExceptionTranslator : TypeMap<Func<Exception, CrException>>
 
     private static CrException ExecuteTranslator(Exception innerException, Func<Exception, CrException> translator)
     {
-        return
-            translator(innerException) ??
-            throw new InvalidOperationException($"{nameof(translator)} '{translator.Method.Name}' returned null.");
+        return translator(innerException) ?? throw new InvalidOperationException($"{nameof(translator)} returned null.");
     }
 }

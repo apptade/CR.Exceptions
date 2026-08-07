@@ -15,6 +15,6 @@ public class ExceptionFactory : Map<string, Func<CrException>>
 
     private static CrException ExecuteFactory(Func<CrException> factory)
     {
-        return factory() ?? throw new InvalidOperationException($"{nameof(factory)} '{factory.Method.Name}' returned null.");
+        return factory() ?? throw new InvalidOperationException($"{nameof(factory)} returned null.");
     }
 }

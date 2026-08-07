@@ -5,11 +5,11 @@ namespace CR.Exceptions;
 public abstract class ValidationException : CrException
 {
     protected ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "The provided data is invalid. Check the specific errors list.", innerException)
+        : base(errors, "The provided data is invalid.", innerException)
     {
     }
 
-    protected ValidationException(ImmutableArray<CrError> errors, string message, Exception? innerException = null)
+    protected ValidationException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

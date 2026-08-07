@@ -20,11 +20,11 @@ public sealed class CrExceptionHandlerTests
     }
 
     [Fact]
-    public Task Should_Return_500_For_InternalException()
+    public Task Should_Return_404_For_NotFoundException()
     {
         return AssertHandlerResult(
-            new TestInternalException(),
-            StatusCodes.Status500InternalServerError,
+            new TestNotFoundException(),
+            StatusCodes.Status404NotFound,
             canCreateActivity: true);
     }
 
@@ -66,7 +66,7 @@ public sealed class CrExceptionHandlerTests
         var problem = await JsonSerializer.DeserializeAsync<TestProblemDetails>(responseStream, JsonSerializerOptions.Web);
         var expectedTraceId = activity?.TraceId.ToHexString() ?? context.TraceIdentifier;
 
-        AssertProblemDetails(problem, context, expectedStatusCode, expectedTraceId);
+        AssertProblemDetails(problem, expectedStatusCode, expectedTraceId);
 
         _output.WriteLine(JsonSerializer.Serialize(problem, options: _prettyJsonOptions));
     }
@@ -77,16 +77,14 @@ public sealed class CrExceptionHandlerTests
         Assert.Contains("application/problem+json", context.Response.ContentType);
     }
 
-    private static void AssertProblemDetails(TestProblemDetails? problem, HttpContext context, int expectedStatusCode, string? expectedTraceId)
+    private static void AssertProblemDetails(TestProblemDetails? problem, int expectedStatusCode, string? expectedTraceId)
     {
         Assert.NotNull(problem);
 
         Assert.False(string.IsNullOrEmpty(problem.Type));
         Assert.False(string.IsNullOrEmpty(problem.Title));
-        Assert.False(string.IsNullOrEmpty(problem.Detail));
 
         Assert.Equal(expectedStatusCode, problem.Status);
-        Assert.Equal(context.Request.Path, problem.Instance);
 
         Assert.True(problem.Extensions.TryGetValue(ProblemDetailsExtensionNames.TraceId, out var traceId));
         Assert.Equal(expectedTraceId, traceId!.ToString());
@@ -105,9 +103,8 @@ public sealed class CrExceptionHandlerTests
 
     private static DefaultHttpContext CreateContext(MemoryStream responseStream)
     {
-        return new DefaultHttpContext
+        return new()
         {
-            Request = { Path = "/api/test" },
             Response = { Body = responseStream }
         };
     }

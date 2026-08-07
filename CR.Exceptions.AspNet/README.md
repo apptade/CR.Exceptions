@@ -16,12 +16,6 @@ This package provides automatic handling of `CrException` instances, converts th
 
 # Installation
 
-```bash
-dotnet add package CrCore.Exceptions.AspNet
-```
-
-Register the default exception handling during application startup.
-
 ```csharp
 builder.Services.AddCrExceptionsCore();
 
@@ -88,18 +82,16 @@ Example:
 
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-  "title": "An error occurred while processing your request.",
-  "status": 500,
-  "detail": "An unexpected internal error occurred.",
-  "instance": "/api/test",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+  "title": "Not Found",
+  "status": 404,
   "errors": [
     {
-      "code": "TestInternalCode",
-      "message": "TestInternalMessage"
+      "code": "TestNotFoundCode",
+      "message": "Test not found message"
     }
   ],
-  "traceId": "1ca274bed877413cefd8094fc63bd559"
+  "traceId": "c771b28502648371f14885924e6d1767"
 }
 ```
 
@@ -118,14 +110,12 @@ Example:
   "type": "https://tools.ietf.org/html/rfc9110#section-15.6.1",
   "title": "An error occurred while processing your request.",
   "status": 500,
-  "detail": "An unexpected error occurred.",
-  "instance": "/api/test",
   "errors": [
     {
       "code": "InternalError",
       "message": "An unexpected internal error occurred."
     }
   ],
-  "traceId": "b217277ea131750f161bc6e8d8b33302"
+  "traceId": "9bf8d72774b6f2d97cac7607bb19f408"
 }
 ```

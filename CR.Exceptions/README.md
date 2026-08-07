@@ -15,14 +15,6 @@ This package contains only the core exception model and has no ASP.NET Core depe
 
 ---
 
-# Installation
-
-```bash
-dotnet add package CrCore.Exceptions
-```
-
----
-
 # Error Model
 
 Every application error is represented by `CrError`.
