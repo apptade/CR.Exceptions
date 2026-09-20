@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Cr.Exceptions.AspNetCore.Tests/Cr.Exceptions.AspNetCore.Tests.csproj" />
+  <Project Path="Cr.Exceptions.AspNetCore/Cr.Exceptions.AspNetCore.csproj" />
+  <Project Path="Cr.Exceptions.Tests/Cr.Exceptions.Tests.csproj" />
+  <Project Path="Cr.Exceptions/Cr.Exceptions.csproj" />
+</Solution>
