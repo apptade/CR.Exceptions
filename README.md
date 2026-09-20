@@ -4,18 +4,18 @@ A lightweight framework for defining application errors, creating typed exceptio
 
 ## Modules
 
-### CR.Exceptions
+### Cr.Exceptions
 
 Core library for defining application errors, exception categories and their creation.
 
-[README](./CR.Exceptions/README.md)
+[README](./Cr.Exceptions/README.md)
 [NuGet](https://www.nuget.org/packages/CrCore.Exceptions/)
 
 ---
 
-### CR.Exceptions.AspNet
+### Cr.Exceptions.AspNetCore
 
 ASP.NET Core integration for handling exceptions and converting them into RFC 7807 ProblemDetails responses.
 
-[README](./CR.Exceptions.AspNet/README.md)
-[NuGet](https://www.nuget.org/packages/CrCore.Exceptions.AspNet/)
+[README](./Cr.Exceptions.AspNetCore/README.md)
+[NuGet](https://www.nuget.org/packages/CrCore.Exceptions.AspNetCore/)
