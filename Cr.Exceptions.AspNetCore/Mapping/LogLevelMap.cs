@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Cr.Exceptions.AspNetCore;
