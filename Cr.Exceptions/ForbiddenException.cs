@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class ForbiddenException : CrException
+public class ForbiddenException : CrException
 {
-    protected ForbiddenException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public ForbiddenException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "You do not have permission to perform this operation.", innerException)
     {
     }
 
-    protected ForbiddenException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public ForbiddenException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

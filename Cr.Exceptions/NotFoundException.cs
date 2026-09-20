@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class NotFoundException : CrException
+public class NotFoundException : CrException
 {
-    protected NotFoundException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public NotFoundException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "The requested resource was not found.", innerException)
     {
     }
 
-    protected NotFoundException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public NotFoundException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

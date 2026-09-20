@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class InternalException : CrException
+public class InternalException : CrException
 {
-    protected InternalException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public InternalException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "An unexpected internal error occurred.", innerException)
     {
     }
 
-    protected InternalException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public InternalException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

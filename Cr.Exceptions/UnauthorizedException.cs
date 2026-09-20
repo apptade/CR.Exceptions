@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class UnauthorizedException : CrException
+public class UnauthorizedException : CrException
 {
-    protected UnauthorizedException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public UnauthorizedException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "Authentication is required to access this resource.", innerException)
     {
     }
 
-    protected UnauthorizedException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public UnauthorizedException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

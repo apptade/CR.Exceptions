@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class UnprocessableException : CrException
+public class UnprocessableException : CrException
 {
-    protected UnprocessableException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public UnprocessableException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "The request could not be processed.", innerException)
     {
     }
 
-    protected UnprocessableException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public UnprocessableException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }

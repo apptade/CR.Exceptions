@@ -1,15 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿namespace Cr.Exceptions;
 
-namespace Cr.Exceptions;
-
-public abstract class ValidationException : CrException
+public class ValidationException : CrException
 {
-    protected ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null)
+    public ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null)
         : base(errors, "The provided data is invalid.", innerException)
     {
     }
 
-    protected ValidationException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
+    public ValidationException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
         : base(errors, message, innerException)
     {
     }
