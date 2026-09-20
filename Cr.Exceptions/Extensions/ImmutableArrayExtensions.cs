@@ -6,13 +6,16 @@ public static class ImmutableArrayExtensions
 {
     extension<TSource>(ImmutableArray<TSource> source)
     {
-        public void ThrowIfEmptyOrContainsNull([CallerArgumentExpression(nameof(source))] string? paramName = null)
+        public void ThrowIfDefault([CallerArgumentExpression(nameof(source))] string? paramName = null)
         {
-            if (source.IsDefaultOrEmpty)
+            if (source.IsDefault)
             {
-                throw new ArgumentException("The array cannot be default or empty.", paramName);
+                throw new ArgumentException("The array cannot be default.", paramName);
             }
+        }
 
+        public void ThrowIfContainsNull([CallerArgumentExpression(nameof(source))] string? paramName = null)
+        {
             for (var i = 0; i < source.Length; i++)
             {
                 if (source[i] is null)

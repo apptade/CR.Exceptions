@@ -11,7 +11,8 @@ public class CrException : Exception
 
     public CrException(ImmutableArray<CrError> errors, string? message = null, Exception? innerException = null) : base(message, innerException)
     {
-        errors.ThrowIfEmptyOrContainsNull();
+        errors.ThrowIfDefault();
+        errors.ThrowIfContainsNull();
 
         Errors = errors;
     }
