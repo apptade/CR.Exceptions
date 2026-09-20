@@ -9,11 +9,8 @@
 
   <PropertyGroup>
     <Description>ASP.NET Core integration for Cr.Exceptions.</Description>
-
     <PackageId>$(NuGetPackagePrefix).Exceptions.AspNetCore</PackageId>
     <PackageTags>exceptions;aspnetcore;webapi;problem-details;rfc7807;middleware;exception-handler</PackageTags>
-
-    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,10 +19,6 @@
 
   <ItemGroup>
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
