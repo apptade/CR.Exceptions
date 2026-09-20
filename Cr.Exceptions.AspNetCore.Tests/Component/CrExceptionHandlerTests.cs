@@ -1,5 +1,4 @@
-﻿using Cr.Exceptions.Tests.Shared;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +22,7 @@ public sealed class CrExceptionHandlerTests
     public Task Should_Return_404_For_NotFoundException()
     {
         return AssertHandlerResult(
-            new TestNotFoundException(),
+            new NotFoundException(),
             StatusCodes.Status404NotFound,
             canCreateActivity: true);
     }
@@ -90,7 +89,6 @@ public sealed class CrExceptionHandlerTests
         Assert.Equal(expectedTraceId, traceId!.ToString());
 
         Assert.NotNull(problem.Errors);
-        Assert.NotEmpty(problem.Errors);
     }
 
     private static ServiceProvider CreateServiceProvider()

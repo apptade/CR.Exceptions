@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cr.Exceptions.AspNetCore\Cr.Exceptions.AspNetCore.csproj" />
-    <ProjectReference Include="..\Cr.Exceptions.Tests.Shared\Cr.Exceptions.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

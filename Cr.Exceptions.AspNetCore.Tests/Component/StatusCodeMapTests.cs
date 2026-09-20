@@ -1,13 +1,12 @@
-﻿using Cr.Exceptions.Tests.Shared;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Cr.Exceptions.AspNetCore.Tests.Component;
 
 public sealed class StatusCodeMapTests
 {
     private const int ExpectedStatusCode = StatusCodes.Status500InternalServerError;
-    private static readonly TestInternalException ExistentException = new();
-    private static readonly TestUnknownException NonExistentException = new();
+    private static readonly InternalException ExistentException = new();
+    private static readonly CrException NonExistentException = new();
 
     [Fact]
     public void TryFind_ShouldReturn_TrueAndCode_WhenExceptionExists()
@@ -32,7 +31,7 @@ public sealed class StatusCodeMapTests
     private static StatusCodeMap GetDefaultMap()
     {
         return new StatusCodeMapBuilder()
-            .Map<TestInternalException>(ExpectedStatusCode)
+            .Map<InternalException>(ExpectedStatusCode)
             .Build();
     }
 }

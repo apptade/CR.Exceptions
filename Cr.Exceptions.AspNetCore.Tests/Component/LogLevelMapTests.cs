@@ -1,13 +1,12 @@
-﻿using Cr.Exceptions.Tests.Shared;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Cr.Exceptions.AspNetCore.Tests.Component;
 
 public sealed class LogLevelMapTests
 {
     private const LogLevel ExpectedLogLevel = LogLevel.Warning;
-    private static readonly TestInternalException ExistentException = new();
-    private static readonly TestUnknownException NonExistentException = new();
+    private static readonly InternalException ExistentException = new();
+    private static readonly CrException NonExistentException = new();
 
     [Fact]
     public void TryFind_ShouldReturn_TrueAndLevel_WhenExceptionExists()
@@ -32,7 +31,7 @@ public sealed class LogLevelMapTests
     private static LogLevelMap GetDefaultMap()
     {
         return new LogLevelMapBuilder()
-            .Map<TestInternalException>(ExpectedLogLevel)
+            .Map<InternalException>(ExpectedLogLevel)
             .Build();
     }
 }
