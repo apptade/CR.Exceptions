@@ -1,6 +1,4 @@
-﻿using Cr.Exceptions.Tests.Shared;
-
-namespace Cr.Exceptions.Tests.Component;
+﻿namespace Cr.Exceptions.Tests.Component;
 
 public sealed class ExceptionFactoryTests
 {
@@ -10,18 +8,18 @@ public sealed class ExceptionFactoryTests
     [Fact]
     public void TryCreate_ShouldReturn_TrueAndException_WhenCodeExists()
     {
-        var factory = GetDefaultFactory(ExistentCode);
+        var factory = GetDefaultFactory();
         var result = factory.TryCreate(ExistentCode, out var exception);
 
         Assert.True(result);
         Assert.NotNull(exception);
-        Assert.IsType<TestInternalException>(exception);
+        Assert.IsType<InternalException>(exception);
     }
 
     [Fact]
     public void TryCreate_ShouldReturn_FalseAndNull_WhenCodeDoesNotExist()
     {
-        var factory = GetDefaultFactory("?");
+        var factory = GetDefaultFactory();
         var result = factory.TryCreate(NonExistentCode, out var exception);
 
         Assert.False(result);
@@ -31,25 +29,25 @@ public sealed class ExceptionFactoryTests
     [Fact]
     public void Create_ShouldReturn_Exception_WhenCodeExists()
     {
-        var factory = GetDefaultFactory(ExistentCode);
+        var factory = GetDefaultFactory();
         var exception = factory.Create(ExistentCode);
 
         Assert.NotNull(exception);
-        Assert.IsType<TestInternalException>(exception);
+        Assert.IsType<InternalException>(exception);
     }
 
     [Fact]
     public void Create_ShouldThrow_WhenCodeDoesNotExist()
     {
-        var factory = GetDefaultFactory("?");
+        var factory = GetDefaultFactory();
 
         Assert.Throws<KeyNotFoundException>(() => factory.Create(NonExistentCode));
     }
 
-    private static ExceptionFactory GetDefaultFactory(string code)
+    private static ExceptionFactory GetDefaultFactory()
     {
         return new ExceptionFactoryBuilder()
-            .Map(code, () => new TestInternalException())
+            .Map(ExistentCode, () => new InternalException())
             .Build();
     }
 }

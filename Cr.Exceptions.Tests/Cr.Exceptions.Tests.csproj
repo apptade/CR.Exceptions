@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cr.Exceptions.Tests.Shared\Cr.Exceptions.Tests.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

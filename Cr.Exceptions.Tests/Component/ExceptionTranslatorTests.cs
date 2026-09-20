@@ -1,11 +1,9 @@
-﻿using Cr.Exceptions.Tests.Shared;
-
-namespace Cr.Exceptions.Tests.Component;
+﻿namespace Cr.Exceptions.Tests.Component;
 
 public sealed class ExceptionTranslatorTests
 {
-    private static readonly TestInternalException ExistentException = new();
-    private static readonly TestUnknownException NonExistentException = new();
+    private static readonly InternalException ExistentException = new();
+    private static readonly ConflictException NonExistentException = new();
 
     [Fact]
     public void TryTranslate_ShouldReturn_TrueAndException_WhenExceptionExists()
@@ -15,7 +13,7 @@ public sealed class ExceptionTranslatorTests
 
         Assert.True(result);
         Assert.NotNull(exception);
-        Assert.IsType<TestUnknownException>(exception);
+        Assert.IsType<ConflictException>(exception);
     }
 
     [Fact]
@@ -35,7 +33,7 @@ public sealed class ExceptionTranslatorTests
         var exception = translator.Translate(ExistentException);
 
         Assert.NotNull(exception);
-        Assert.IsType<TestUnknownException>(exception);
+        Assert.IsType<ConflictException>(exception);
     }
 
     [Fact]
@@ -49,7 +47,7 @@ public sealed class ExceptionTranslatorTests
     private static ExceptionTranslator GetDefaultTranslator()
     {
         return new ExceptionTranslatorBuilder()
-            .Map<TestInternalException>(ex => new TestUnknownException(ex))
+            .Map<InternalException>(ex => new ConflictException(ex))
             .Build();
     }
 }

@@ -1,6 +1,4 @@
-﻿using Cr.Exceptions.Tests.Shared;
-
-namespace Cr.Exceptions.Tests.Unit;
+﻿namespace Cr.Exceptions.Tests.Unit;
 
 public sealed class ExceptionFactoryBuilderTests
 {
@@ -10,8 +8,8 @@ public sealed class ExceptionFactoryBuilderTests
         const string code = "duplicate";
 
         var builder = new ExceptionFactoryBuilder()
-            .Map(code, () => new TestUnknownException());
+            .Map(code, () => new UnprocessableException());
 
-        Assert.ThrowsAny<ArgumentException>(() => builder.Map(code, () => new TestUnknownException()));
+        Assert.ThrowsAny<ArgumentException>(() => builder.Map(code, () => new CrException()));
     }
 }
