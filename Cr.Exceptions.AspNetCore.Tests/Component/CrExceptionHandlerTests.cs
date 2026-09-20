@@ -73,10 +73,10 @@ public sealed class CrExceptionHandlerTests
     private static void AssertHttpContext(HttpContext context, int expectedStatusCode)
     {
         Assert.Equal(expectedStatusCode, context.Response.StatusCode);
-        Assert.Contains("application/problem+json", context.Response.ContentType);
+        Assert.Contains(System.Net.Mime.MediaTypeNames.Application.ProblemJson, context.Response.ContentType);
     }
 
-    private static void AssertProblemDetails(TestProblemDetails? problem, int expectedStatusCode, string? expectedTraceId)
+    private static void AssertProblemDetails(TestProblemDetails? problem, int expectedStatusCode, string expectedTraceId)
     {
         Assert.NotNull(problem);
 
