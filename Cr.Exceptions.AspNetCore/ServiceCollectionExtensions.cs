@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 
 namespace Cr.Exceptions.AspNetCore;
 
@@ -6,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddCrExceptionsCore()
+        public IServiceCollection AddCrExceptions()
         {
             return services
                 .AddCrExceptionHandler()
@@ -53,11 +54,10 @@ public static class ServiceCollectionExtensions
             {
                 options.CustomizeProblemDetails = static context =>
                 {
-                    var currentActivity = System.Diagnostics.Activity.Current;
+                    var traceId = Activity.Current?.TraceId.ToHexString()
+                        ?? context.HttpContext.TraceIdentifier;
 
-                    context.ProblemDetails.Extensions[ProblemDetailsExtensionNames.TraceId] = currentActivity != null
-                        ? currentActivity.TraceId.ToHexString()
-                        : context.HttpContext.TraceIdentifier;
+                    context.ProblemDetails.Extensions[ProblemDetailsExtensionNames.TraceId] = traceId;
                 };
             });
         }
