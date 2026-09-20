@@ -2,13 +2,9 @@
 
 public class InternalException : CrException
 {
-    public InternalException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "An unexpected internal error occurred.", innerException)
-    {
-    }
+    private const string DefaultMessage = "An unexpected internal error occurred.";
 
-    public InternalException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
-        : base(errors, message, innerException)
-    {
-    }
+    public InternalException(Exception? innerException = null) : base(DefaultMessage, innerException) { }
+
+    public InternalException(ImmutableArray<CrError> errors, Exception? innerException = null) : base(errors, DefaultMessage, innerException) { }
 }

@@ -2,13 +2,9 @@
 
 public class UnprocessableException : CrException
 {
-    public UnprocessableException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "The request could not be processed.", innerException)
-    {
-    }
+    private const string DefaultMessage = "The request could not be processed.";
 
-    public UnprocessableException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
-        : base(errors, message, innerException)
-    {
-    }
+    public UnprocessableException(Exception? innerException = null) : base(DefaultMessage, innerException) { }
+
+    public UnprocessableException(ImmutableArray<CrError> errors, Exception? innerException = null) : base(errors, DefaultMessage, innerException) { }
 }

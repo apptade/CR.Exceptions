@@ -2,13 +2,9 @@
 
 public class UnauthorizedException : CrException
 {
-    public UnauthorizedException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "Authentication is required to access this resource.", innerException)
-    {
-    }
+    private const string DefaultMessage = "Authentication is required to access this resource.";
 
-    public UnauthorizedException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
-        : base(errors, message, innerException)
-    {
-    }
+    public UnauthorizedException(Exception? innerException = null) : base(DefaultMessage, innerException) { }
+
+    public UnauthorizedException(ImmutableArray<CrError> errors, Exception? innerException = null) : base(errors, DefaultMessage, innerException) { }
 }

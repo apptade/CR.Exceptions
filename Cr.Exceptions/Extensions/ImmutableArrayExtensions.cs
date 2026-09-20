@@ -1,9 +1,8 @@
-﻿using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Cr.Exceptions;
 
-internal static class ImmutableArrayExtensions
+public static class ImmutableArrayExtensions
 {
     extension<TSource>(ImmutableArray<TSource> source)
     {
@@ -11,7 +10,7 @@ internal static class ImmutableArrayExtensions
         {
             if (source.IsDefaultOrEmpty)
             {
-                throw new ArgumentException("The array cannot be empty.", paramName);
+                throw new ArgumentException("The array cannot be default or empty.", paramName);
             }
 
             for (var i = 0; i < source.Length; i++)

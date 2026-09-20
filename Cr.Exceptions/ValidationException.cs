@@ -2,13 +2,9 @@
 
 public class ValidationException : CrException
 {
-    public ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "The provided data is invalid.", innerException)
-    {
-    }
+    private const string DefaultMessage = "The provided data is invalid.";
 
-    public ValidationException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
-        : base(errors, message, innerException)
-    {
-    }
+    public ValidationException(Exception? innerException = null) : base(DefaultMessage, innerException) { }
+
+    public ValidationException(ImmutableArray<CrError> errors, Exception? innerException = null) : base(errors, DefaultMessage, innerException) { }
 }

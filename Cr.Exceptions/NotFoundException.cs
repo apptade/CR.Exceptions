@@ -2,13 +2,9 @@
 
 public class NotFoundException : CrException
 {
-    public NotFoundException(ImmutableArray<CrError> errors, Exception? innerException = null)
-        : base(errors, "The requested resource was not found.", innerException)
-    {
-    }
+    private const string DefaultMessage = "The requested resource was not found.";
 
-    public NotFoundException(ImmutableArray<CrError> errors, string? message, Exception? innerException = null)
-        : base(errors, message, innerException)
-    {
-    }
+    public NotFoundException(Exception? innerException = null) : base(DefaultMessage, innerException) { }
+
+    public NotFoundException(ImmutableArray<CrError> errors, Exception? innerException = null) : base(errors, DefaultMessage, innerException) { }
 }
